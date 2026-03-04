@@ -11,7 +11,7 @@ Import into any repository to get consistent AI-assisted development across all 
 | **Cursor** | `.cursor/rules/standards.mdc` → `AGENTS.md` | Redirect with `alwaysApply: true` |
 | **Windsurf** | `.windsurfrules` → `AGENTS.md` | Redirect |
 | **Claude Code** | `CLAUDE.md` → `AGENTS.md` | Delegation (reads `AGENTS.md` when instructed) |
-| **GitHub Copilot** | `.github/copilot-instructions.md` + `standards/*.md` | Native auto-load; standards shared by all agents |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | Native auto-load; can reference `AGENTS.md` and shared standards |
 | **Cline / Roo Code** | `.clinerules` → `AGENTS.md` | Redirect |
 
 `AGENTS.md` is the **single source of truth** for all coding standards. Every other agent file either reads it natively or redirects to it.
