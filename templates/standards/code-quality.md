@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # Code Quality Standards — SOLID, Clean Code & Clean Architecture
 
 These principles apply to every file, every language, every commit.
@@ -141,7 +137,7 @@ Hard limits — any violation blocks merge.
 | Function parameters | **≤ 3** (public), **≤ 5** (private) | More → use a parameter object |
 | Nesting depth | **≤ 3 levels** | Flatten with early returns or extraction |
 | Function length | **≤ 40 lines** (guideline) | Shorter functions are easier to name and test |
-| File length | **≤ 400 lines** (guideline) | Longer files likely violate SRP |
+| File length | **≤ 400 lines** (guideline) | Longer files likely violate Single Responsibility |
 
 ---
 
@@ -215,11 +211,11 @@ Before opening a PR, walk through each question. If any answer is "no," fix it f
 
 | # | Question | Principle |
 |---|---|---|
-| 1 | Can I describe every function in one sentence without "and"? | SRP |
-| 2 | Did I add behaviour by extending, not modifying, existing code? | OCP |
-| 3 | Do all mocks honour the same contracts as the real thing? | LSP |
-| 4 | Does every module import only what it actually uses? | ISP |
-| 5 | Are external services accessed through an abstraction, never inline? | DIP |
+| 1 | Can I describe every function in one sentence without "and"? | Single Responsibility |
+| 2 | Did I add behaviour by extending, not modifying, existing code? | Open/Closed |
+| 3 | Do all mocks honour the same contracts as the real thing? | Liskov Substitution |
+| 4 | Does every module import only what it actually uses? | Interface Segregation |
+| 5 | Are external services accessed through an abstraction, never inline? | Dependency Inversion |
 | 6 | Are all names intention-revealing, with no cryptic abbreviations? | Clean Code |
 | 7 | Is every function ≤ 3 nesting levels, ≤ 10 cyclomatic complexity? | Complexity |
 | 8 | Do dependencies flow inward only (domain has zero framework imports)? | Clean Arch |

@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # GDPR Compliance Standards — Data Protection by Design
 
 > Include this file in any project that collects, stores, processes, or transmits

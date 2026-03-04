@@ -54,7 +54,7 @@
 
 Dependencies point inward. This is non-negotiable.
 
-```
+```text
 Presentation (Controllers / API)
     ↓
 Application (Use Cases / Handlers)
@@ -76,7 +76,7 @@ Infrastructure (Database / External APIs / Messaging)
 
 <!-- PROJECT: Map the directory layout. -->
 
-```
+```text
 <project directory layout>
 ```
 
@@ -162,6 +162,71 @@ Infrastructure (Database / External APIs / Messaging)
 
 ---
 
+## Agent Behaviour
+
+### Research and Analysis
+
+- Establish scope and constraints before diving in.
+- Identify primary sources over secondary commentary.
+- Cross-reference claims across multiple sources when possible.
+- Distinguish between facts, consensus, and speculation.
+- Note confidence level: certain, likely, uncertain.
+- Flag when information may be outdated relative to your knowledge cutoff.
+- Define problems clearly before proposing solutions. Consider at least two alternatives.
+
+### Writing Standards
+
+- **Concise over verbose.** Say it in fewer words.
+- **Active voice.** "The team decided" not "It was decided by the team."
+- **Specific over general.** "Latency increased 3x" not "Performance degraded significantly."
+- **British English** unless the context requires otherwise.
+- **No filler.** Cut "In order to" (use "To"), "It should be noted that" (just state it).
+- **Tables over prose** for comparisons, options, and structured data.
+- Lead with the conclusion or recommendation. Detail follows.
+
+### Communication Style
+
+- Direct and to the point. No preamble or postamble.
+- Match the register of the request — technical for technical, plain for plain.
+- If a one-word answer is sufficient, give a one-word answer.
+- Do not repeat the question back. Do not summarise what you are about to do. Just do it.
+- When disagreeing, lead with the evidence.
+
+### Working With Files
+
+- Read before writing — understand existing content and conventions.
+- Follow existing conventions in the target directory (naming, format, structure).
+- No emoji unless explicitly requested.
+- Use markdown with consistent heading hierarchy.
+- Prefer editing existing files over creating new ones.
+- Batch independent operations for efficiency.
+
+### Assessment and Review Workflows
+
+When asked to assess or review an application, codebase, or system:
+
+- **PR-level:** Apply the relevant `standards/*.md` for the change.
+
+Standards file inventory:
+
+| Concern | File |
+| --- | --- |
+| SOLID, DRY, Clean Code, Clean Architecture | `standards/code-quality.md` |
+| Security — OWASP Top 10 | `standards/security.md` |
+| Testing — Test Trophy Model | `standards/testing.md` |
+| CI/CD — Quality Gates & Fast Flow | `standards/ci-cd.md` |
+| Observability — OpenTelemetry | `standards/observability.md` |
+| Resilience & Fault Tolerance | `standards/resilience.md` |
+| Performance & Scalability | `standards/performance.md` |
+| Cost Optimisation | `standards/cost-optimisation.md` |
+| Operational Excellence & IaC | `standards/operational-excellence.md` |
+| API Design | `standards/api-design.md` |
+| AWS Well-Architected (6 pillars) | `standards/aws-well-architected.md` |
+| GDPR Compliance | `standards/gdpr.md` |
+| PCI DSS Compliance | `standards/pci-dss.md` |
+
+---
+
 ## Mandated Standards
 
 The following standards are non-negotiable. Do not weaken them.
@@ -176,6 +241,8 @@ The following standards are non-negotiable. Do not weaken them.
 - **Evidence Over Opinion:** Reference specific code, config, or behaviour. No vague assertions.
 
 ### SOLID Principles
+
+See `standards/code-quality.md` for detailed SOLID, DRY, Clean Code, and Clean Architecture standards.
 
 - **Single Responsibility Principle:** Each module, class, and function has exactly one reason to change. Controllers handle HTTP only. Use cases contain orchestration only. Domain entities contain business rules only.
 - **Open/Closed Principle:** New behaviour via new implementations, not modification. Long switch/if-elif chains indicate missing polymorphism.
@@ -205,6 +272,8 @@ The following standards are non-negotiable. Do not weaken them.
 
 ### Security — OWASP Top 10
 
+See `standards/security.md` for full standards.
+
 - **A01 Broken Access Control:** Authorisation on every endpoint. No sequential IDs without auth. Path traversal prevention.
 - **A02 Cryptographic Failures:** Never log secrets. Never persist unencrypted. Source from env vars or secret stores only.
 - **A03 Injection:** Parameterise all queries. No shell commands with user data. Allowlist validation at trust boundaries.
@@ -220,6 +289,8 @@ The following standards are non-negotiable. Do not weaken them.
 
 ### Testing — Test Trophy Model
 
+See `standards/testing.md` for full standards.
+
 - **Behavioural testing:** Tests describe what the system does (inputs → outputs), not implementation details. Resilient to refactoring.
 - **Test-first for bugs:** Test asserting correct behaviour (fails) → fix code → test passes.
 - **Test-first for refactoring:** Tests capturing correct behaviour (pass) → refactor → still pass.
@@ -227,6 +298,8 @@ The following standards are non-negotiable. Do not weaken them.
 - **Quality:** Deterministic. Isolated. No flaky tests. No test interdependencies.
 
 ### CI/CD — Automated Quality Gates
+
+See `standards/ci-cd.md` for full standards including Fast Flow.
 
 Every PR must pass all gates. No exceptions.
 
@@ -258,6 +331,8 @@ Pipeline speed is a feature. Optimise for the shortest possible feedback loop �
 
 ### Observability — OpenTelemetry
 
+See `standards/observability.md` for full standards.
+
 - **Structured logging:** JSON lines following OTEL Log Data Model. Required fields: `timestamp` (ISO 8601 UTC), `severity`, `body`, `traceId`, `spanId`, `attributes`. Attributes include `service.name`, `operation.name`, `duration_ms`, `status`.
 - **Severity levels:** DEBUG for internals, INFO for operations, WARN for retryable failures, ERROR for non-retryable.
 - **Distributed tracing:** W3C `traceparent`/`tracestate` propagation. Root span per inbound request. Child span per outbound call (HTTP, DB, queue).
@@ -272,6 +347,8 @@ Pipeline speed is a feature. Optimise for the shortest possible feedback loop �
 
 ### Resilience & Fault Tolerance
 
+See `standards/resilience.md` for full standards.
+
 - **Circuit breakers** on all external dependency calls.
 - **Retry:** Exponential backoff + jitter. Max 3 attempts. Transient failures only (5xx, timeouts). Never retry auth (401/403) or validation (4xx).
 - **Timeouts:** Explicit on ALL external calls. Inner < outer. No unbounded waits.
@@ -281,6 +358,8 @@ Pipeline speed is a feature. Optimise for the shortest possible feedback loop �
 - **Back-pressure:** 429 with Retry-After when overwhelmed.
 
 ### Performance & Scalability
+
+See `standards/performance.md` for full standards.
 
 - **No N+1 queries.** Every list operation triggering per-item queries is a defect.
 - **No SELECT *.** Request only needed fields.
@@ -294,6 +373,8 @@ Pipeline speed is a feature. Optimise for the shortest possible feedback loop �
 
 ### Cost Optimisation
 
+See `standards/cost-optimisation.md` for full standards.
+
 - Cache before network. No polling. Bounded outputs.
 - Dependency minimisation: stdlib first, check maintenance/licence/transitive graph.
 - Pin dependencies. Lock file committed.
@@ -302,6 +383,8 @@ Pipeline speed is a feature. Optimise for the shortest possible feedback loop �
 
 ### Operational Excellence
 
+See `standards/operational-excellence.md` for full standards including Infrastructure as Code.
+
 - All config via environment variables. Required vars validated at startup. Safe defaults.
 - Structured error responses. Specific exceptions. No stack traces to callers.
 - PRs are small, focused, single-concern. Conventional Commits. Never force-push main.
@@ -309,6 +392,8 @@ Pipeline speed is a feature. Optimise for the shortest possible feedback loop �
 ---
 
 ## API Design Standards
+
+See `standards/api-design.md` for full standards.
 
 <!-- PROJECT: Include if this project exposes APIs.
      Configure spec location, URL structure, envelope schema. -->
@@ -323,6 +408,8 @@ Pipeline speed is a feature. Optimise for the shortest possible feedback loop �
 
 ## Infrastructure as Code
 
+See `standards/operational-excellence.md` for full IaC standards.
+
 <!-- PROJECT: Include if this project has infrastructure.
      Configure IaC tool, location, state management. -->
 
@@ -333,10 +420,27 @@ Pipeline speed is a feature. Optimise for the shortest possible feedback loop �
 
 ---
 
+## AWS Well-Architected Framework
+
+See `standards/aws-well-architected.md` for full standards across all six pillars.
+
+<!-- PROJECT: Include if deploying to AWS or designing for cloud readiness. -->
+
+- Evaluate every design decision against the six pillars: Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimisation, Sustainability.
+- Operational Excellence: IaC, runbooks, small frequent changes, observability.
+- Security: Defence in depth, least privilege, encryption at rest and in transit.
+- Reliability: Fault isolation, automatic recovery, horizontal scaling, chaos testing.
+- Performance Efficiency: Right-size resources, caching, async processing, CDN.
+- Cost Optimisation: Right-size, reserved/spot capacity, lifecycle policies, tagging.
+- Sustainability: Minimise idle resources, efficient algorithms, regional selection.
+
+---
+
 ## Compliance — GDPR [CONFIGURE]
 
-<!-- PROJECT: Include if this project handles personal data of EEA/UK individuals.
-     See `.github/instructions/gdpr.instructions.md` for full standards. -->
+See `standards/gdpr.md` for full standards.
+
+<!-- PROJECT: Include if this project handles personal data of EEA/UK individuals. -->
 
 - Every processing activity has a documented lawful basis before code is written.
 - Collect only the personal data strictly necessary for the documented purpose.
@@ -351,10 +455,11 @@ Pipeline speed is a feature. Optimise for the shortest possible feedback loop �
 
 ## Compliance — PCI DSS [CONFIGURE]
 
+See `standards/pci-dss.md` for full standards.
+
 <!-- PROJECT: Include only if this product stores, processes, or transmits
      payment card data. If all card handling is delegated to a PCI-compliant
-     third party, verify scope with your QSA before including.
-     See `.github/instructions/pci-dss.instructions.md` for full standards. -->
+     third party, verify scope with your QSA before including. -->
 
 - Minimise the Cardholder Data Environment (CDE). Tokenise or delegate card handling to reduce scope.
 - Never store CVV, PIN, or full track data after authorisation. Never log the full PAN.

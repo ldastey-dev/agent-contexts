@@ -28,7 +28,7 @@ Evaluate the application against the criteria below. Each area must be assessed 
 ### 2.1 Security
 
 | Aspect | What to evaluate |
-|---|---|
+| --- | --- |
 | OWASP Top 10 | Injection, broken auth, sensitive data exposure, XXE, broken access control, misconfig, XSS, insecure deserialisation, known vulnerable components, insufficient logging |
 | Secure coding | Input validation, output encoding, error handling that doesn't leak internals, defence in depth |
 | Secrets management | Hardcoded secrets, config hygiene, secret rotation capability, vault integration |
@@ -39,7 +39,7 @@ Evaluate the application against the criteria below. Each area must be assessed 
 ### 2.2 Architecture & Code Quality
 
 | Aspect | What to evaluate |
-|---|---|
+| --- | --- |
 | Well-Architected Framework | Assess against all pillars: operational excellence, security, reliability, performance efficiency, cost optimisation, and sustainability |
 | SOLID principles | Single responsibility, open/closed, Liskov substitution, interface segregation, dependency inversion |
 | Clean Architecture | Separation of concerns, dependency direction, layer boundaries, domain isolation |
@@ -51,7 +51,7 @@ Evaluate the application against the criteria below. Each area must be assessed 
 ### 2.3 Resilience & Performance
 
 | Aspect | What to evaluate |
-|---|---|
+| --- | --- |
 | Fault tolerance | Circuit breakers, retry policies (with backoff/jitter), timeout handling, bulkhead isolation, graceful degradation |
 | Resource management | Memory leaks, connection pool management, disposal patterns, resource exhaustion paths |
 | Performance | Hot paths, N+1 queries, unnecessary allocations, caching strategy, async/await correctness |
@@ -60,7 +60,7 @@ Evaluate the application against the criteria below. Each area must be assessed 
 ### 2.4 Observability
 
 | Aspect | What to evaluate |
-|---|---|
+| --- | --- |
 | Distributed tracing | OpenTelemetry instrumentation, trace propagation across service boundaries, span coverage of critical paths |
 | Structured logging | Log levels, structured format (JSON), correlation IDs, PII redaction in logs |
 | Metrics | Application-level metrics (latency, throughput, error rate), resource metrics, custom business metrics |
@@ -70,8 +70,8 @@ Evaluate the application against the criteria below. Each area must be assessed 
 ### 2.5 Testing & Pipeline Quality
 
 | Aspect | What to evaluate |
-|---|---|
-| Test architecture | Unit, integration, contract, and end-to-end test separation; test pyramid adherence |
+| --- | --- |
+| Test architecture | Unit, integration, contract, and end-to-end test separation; Test Trophy Model adherence |
 | Behavioural testing | Tests describe *what the system does*, not implementation details; resilient to refactoring |
 | Coverage & gaps | Critical path coverage, edge cases, error paths, untested public surface area |
 | Test quality | Determinism, speed, isolation, meaningful assertions, no test interdependencies |
@@ -81,7 +81,7 @@ Evaluate the application against the criteria below. Each area must be assessed 
 ### 2.6 Deployment & Infrastructure
 
 | Aspect | What to evaluate |
-|---|---|
+| --- | --- |
 | Infrastructure as Code | IaC coverage, drift detection, environment parity |
 | Containerisation | Dockerfile quality, image size, base image currency, non-root execution |
 | Environment management | Dev/staging/prod parity, configuration injection, secret delivery |
@@ -107,7 +107,7 @@ A concise (half-page max) summary for a technical leadership audience covering:
 For each of the six assessment areas (2.1 through 2.6), list every finding with:
 
 | Field | Description |
-|---|---|
+| --- | --- |
 | **Finding ID** | Category prefix + number (e.g., `SEC-001`, `ARCH-003`, `TEST-007`) |
 | **Title** | One-line summary |
 | **Severity** | Critical / High / Medium / Low |
@@ -120,7 +120,7 @@ For each of the six assessment areas (2.1 through 2.6), list every finding with:
 After listing all findings, produce a summary table sorted by priority. Priority is determined by the combination of **severity** (impact if unresolved) and **effort** (estimated complexity to fix):
 
 | Finding ID | Title | Severity | Effort (S/M/L/XL) | Priority Rank | Remediation Phase |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 
 Quick wins (high severity + small effort) rank highest.
 
@@ -131,7 +131,7 @@ Quick wins (high severity + small effort) rank highest.
 For every finding, produce a remediation action. Group and order actions into phases:
 
 | Phase | Rationale |
-|---|---|
+| --- | --- |
 | **Phase A: Safety net** | Test coverage and pipeline improvements -- establish regression protection before changing anything |
 | **Phase B: Security** | Address vulnerabilities and secure coding issues while the safety net is in place |
 | **Phase C: Resilience & performance** | Fault tolerance, resource management, performance fixes |
@@ -145,7 +145,7 @@ Within each phase, order by priority rank from the matrix above.
 Each action must include:
 
 | Field | Description |
-|---|---|
+| --- | --- |
 | **Action ID** | Matches the Finding ID it addresses |
 | **Title** | Clear, concise name for the change |
 | **Phase** | A through E |

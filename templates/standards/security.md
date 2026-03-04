@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # Secure Coding Standards — OWASP Top 10 & Beyond
 
 ## Core Principle

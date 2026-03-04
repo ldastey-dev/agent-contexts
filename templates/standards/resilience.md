@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # Resilience & Fault Tolerance Standards
 
 Every service that communicates over a network — HTTP APIs, databases, message

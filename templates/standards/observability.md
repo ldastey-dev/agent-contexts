@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # Observability Standards — OpenTelemetry (OTEL)
 
 All observability in this project must follow the **OpenTelemetry (OTEL) Semantic

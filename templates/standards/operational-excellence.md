@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # Operational Excellence Standards — Well-Architected Pillar 1
 
 Operational excellence means running systems effectively, gaining insight into
@@ -61,7 +57,7 @@ project must be operable by anyone — not just the original author.
 
 - PRs must be focused and small. One concern per PR — do not bundle unrelated
   changes.
-- Every PR must pass all CI gates before merge (see `ci-cd.instructions.md`).
+- Every PR must pass all CI gates before merge (see `standards/ci-cd.md`).
 - Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/):
   `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`, `ci:`.
 - **Never force-push to `main`** — always use PRs with squash merge.
@@ -93,7 +89,7 @@ project must be operable by anyone — not just the original author.
 
 ## 4 · Observability Integration
 
-See `.github/instructions/observability.instructions.md` for full OTEL standards.
+See `standards/observability.md` for full OTEL standards.
 This section covers the operational aspects of observability.
 
 ### Structured Logging Requirements
@@ -171,7 +167,8 @@ This section covers the operational aspects of observability.
 
 ## 6 · Automated Quality Gates
 
-### CI Pipeline (see `ci-cd.instructions.md` for full spec)
+### CI Pipeline (see `standards/ci-cd.md` for full spec)
+
 Stages must execute in this order (cheapest and fastest first):
 
 1. **Lock file verification** — `[PACKAGE_MANAGER] install --frozen-lockfile`

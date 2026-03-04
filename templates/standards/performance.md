@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # Performance & Scalability Standards
 
 Every code change must be evaluated for its impact on runtime performance,

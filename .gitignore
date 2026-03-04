@@ -1,1 +1,11 @@
 **/reviews/
+**.vscode/
+
+
+# Agent-generated artifacts (root only — templates/ are intentional)
+/AGENTS.md
+/CLAUDE.md
+/.clinerules
+/.windsurfrules
+/.cursor/
+/.cognition/

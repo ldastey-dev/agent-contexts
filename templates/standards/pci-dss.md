@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # PCI DSS Compliance Standards — Secure Handling of Payment Card Data
 
 > **Applicability:** Include this file only in products that store, process, or
@@ -123,7 +119,7 @@ stored, using one of: *(Req 3.5)*
 
 ### Secure Coding *(Req 6.2)*
 
-All OWASP Top 10 controls apply (see `security.instructions.md`). In
+All OWASP Top 10 controls apply (see `standards/security.md`). In
 addition, PCI DSS mandates:
 
 - **Code reviews** — all custom code changes to payment-related components
@@ -250,7 +246,7 @@ All of the following events must be logged for CDE systems: *(Req 10.2)*
   Scanning Vendor (ASV). Rescan until a passing report is achieved.
   *(Req 11.3.2)*
 - Integrate dependency vulnerability scanning into CI (see
-  `ci-cd.instructions.md` Stage 5). Block merges on HIGH/CRITICAL CVEs
+  `standards/ci-cd.md` Stage 5). Block merges on HIGH/CRITICAL CVEs
   in CDE components.
 
 ### Penetration Testing

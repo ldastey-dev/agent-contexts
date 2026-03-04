@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # API Design Standards — REST, Contracts & Reliability
 
 ## Core Principle

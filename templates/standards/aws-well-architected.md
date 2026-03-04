@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # AWS Well-Architected Framework Guidelines
 
 Every design decision in this repository must be evaluated against the AWS
@@ -41,7 +37,7 @@ architectural quality is significantly costlier than building it in from day one
 | **Network segmentation** | Deploy workloads in private subnets where possible. Use security groups and NACLs with deny-by-default rules. Expose only what is explicitly required. |
 
 <!-- PROJECT: Link to your project's security-specific instructions if they exist, e.g.:
-- See `.github/instructions/security.instructions.md` for OWASP-specific controls.
+- See `standards/security.md` for OWASP-specific controls.
 -->
 
 ---

@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # Testing Standards — Mandatory Coverage & Quality
 
 > Replace bracketed placeholders (`[PACKAGE_NAME]`, `[TEST_RUNNER]`,

@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # CI/CD Pipeline Standards — Gated Pipelines
 
 ## Principle: Nothing Merges Without Passing All Gates

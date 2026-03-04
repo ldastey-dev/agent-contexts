@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # Cost Optimisation Standards — AWS Well-Architected Pillar 5
 
 All design and implementation decisions must account for cost efficiency. These

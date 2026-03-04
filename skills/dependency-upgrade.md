@@ -130,7 +130,7 @@ Determine the migration approach based on the findings from sections 2.1 through
 
 Document the chosen strategy with rationale. Include:
 
-- The specific version path (e.g., `v3.2 → v3.4 → v4.0 → v4.2` or `v3.2 → v4.2` direct).
+- The specific version path (e.g., `v3.2 -> v3.4 -> v4.0 -> v4.2` or `v3.2 -> v4.2` direct).
 - Feature flag names and toggle points for dual-version support.
 - The expected duration of each phase and total upgrade timeline.
 - Go/no-go criteria for proceeding from one stepping stone to the next.

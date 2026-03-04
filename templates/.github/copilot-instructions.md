@@ -100,6 +100,8 @@ Infrastructure (Database / External APIs / Messaging)
 
 ## SOLID Principles
 
+See `standards/code-quality.md` for detailed SOLID, DRY, Clean Code, and Clean Architecture standards.
+
 All code must adhere to SOLID. These are not aspirational — they are enforced.
 
 ### Single Responsibility Principle
@@ -191,6 +193,8 @@ All code must adhere to SOLID. These are not aspirational — they are enforced.
 
 ## Security — OWASP Top 10
 
+See `standards/security.md` for full standards.
+
 All code must be assessed against the OWASP Top 10. These are mandatory controls.
 
 ### A01: Broken Access Control
@@ -268,6 +272,8 @@ All code must be assessed against the OWASP Top 10. These are mandatory controls
 
 ## Testing — Test Trophy Model
 
+See `standards/testing.md` for full standards.
+
 ### Model
 The Test Trophy (Kent C. Dodds) prioritises investment (largest to smallest): integration tests → unit tests → E2E tests, on a foundation of static analysis.
 
@@ -299,6 +305,8 @@ The Test Trophy (Kent C. Dodds) prioritises investment (largest to smallest): in
 ---
 
 ## CI/CD — Automated Quality Gates
+
+See `standards/ci-cd.md` for full standards including Fast Flow.
 
 ### Pipeline Stages (ordered cheapest and fastest first)
 
@@ -354,6 +362,8 @@ Pipeline speed is a feature. Optimise for the shortest possible feedback loop.
 ---
 
 ## Observability — OpenTelemetry
+
+See `standards/observability.md` for full standards.
 
 All observability follows **OpenTelemetry (OTEL) Semantic Conventions**. This ensures vendor-neutral instrumentation portable to any OTEL-compatible backend.
 
@@ -432,6 +442,8 @@ All three pillars must be correlatable:
 
 ## Resilience & Fault Tolerance
 
+See `standards/resilience.md` for full standards.
+
 ### Circuit Breakers
 
 - Implement on all external dependency calls. Monitor failure rate. Open the circuit when threshold is exceeded. Half-open state for recovery detection.
@@ -476,6 +488,8 @@ All three pillars must be correlatable:
 
 ## Performance & Scalability
 
+See `standards/performance.md` for full standards.
+
 ### Database Access
 
 - **No N+1 queries.** This is the most common and impactful performance anti-pattern. Check ORM eager/lazy loading configuration. Every list operation that triggers per-item queries is a defect.
@@ -514,6 +528,8 @@ All three pillars must be correlatable:
 
 ## Cost Optimisation
 
+See `standards/cost-optimisation.md` for full standards.
+
 - **Cache before network.** Every read operation checks local/distributed cache before making an API or database call.
 - **No polling.** Reactive/event-driven patterns only. No scheduled or loop-based API polling.
 - **Bounded outputs.** All list/search operations have maximum result limits to protect downstream consumers and token budgets.
@@ -526,6 +542,8 @@ All three pillars must be correlatable:
 ---
 
 ## Operational Excellence
+
+See `standards/operational-excellence.md` for full standards including Infrastructure as Code.
 
 ### Configuration
 
@@ -561,6 +579,8 @@ All three pillars must be correlatable:
 
 ## API Design Standards
 
+See `standards/api-design.md` for full standards.
+
 Include this section if the project exposes APIs.
 
 - **OpenAPI 3+** specification is mandatory for all APIs. Spec must match implementation. Contract tests gate in CI.
@@ -585,6 +605,8 @@ Include this section if the project exposes APIs.
 
 ## Infrastructure as Code
 
+See `standards/operational-excellence.md` for full IaC standards.
+
 Include this section if the project has infrastructure.
 
 - All infrastructure defined in code. No manual provisioning (ClickOps).
@@ -602,10 +624,26 @@ Include this section if the project has infrastructure.
 
 ---
 
+## AWS Well-Architected Framework
+
+See `standards/aws-well-architected.md` for full standards across all six pillars.
+
+<!-- PROJECT: Include if deploying to AWS or designing for cloud readiness. -->
+
+- Evaluate every design decision against the six pillars: Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimisation, Sustainability.
+- Operational Excellence: IaC, runbooks, small frequent changes, observability.
+- Security: Defence in depth, least privilege, encryption at rest and in transit.
+- Reliability: Fault isolation, automatic recovery, horizontal scaling, chaos testing.
+- Performance Efficiency: Right-size resources, caching, async processing, CDN.
+- Cost Optimisation: Right-size, reserved/spot capacity, lifecycle policies, tagging.
+- Sustainability: Minimise idle resources, efficient algorithms, regional selection.
+
+---
+
 ## Compliance — GDPR
 
 Include this section if the project handles personal data of EEA/UK individuals.
-See `.github/instructions/gdpr.instructions.md` for full standards.
+See `standards/gdpr.md` for full standards.
 
 - Every processing activity has a documented lawful basis before code is written.
 - Collect only the personal data strictly necessary for the documented purpose. No `SELECT *` on personal data tables. API responses return only needed fields.
@@ -631,7 +669,7 @@ See `.github/instructions/gdpr.instructions.md` for full standards.
 
 Include this section only if the product stores, processes, or transmits payment card data.
 If all card handling is delegated to a PCI-compliant third party, verify scope with your QSA.
-See `.github/instructions/pci-dss.instructions.md` for full standards.
+See `standards/pci-dss.md` for full standards.
 
 - Minimise the Cardholder Data Environment (CDE). Tokenise or delegate card handling to reduce scope.
 - **Never store** CVV, PIN, or full track data after authorisation — not at any log level, not in any format, not "temporarily."
@@ -652,6 +690,71 @@ See `.github/instructions/pci-dss.instructions.md` for full standards.
 - QSA contact
 - ASV provider
 -->
+
+---
+
+## Agent Behaviour
+
+### Research and Analysis
+
+- Establish scope and constraints before diving in.
+- Identify primary sources over secondary commentary.
+- Cross-reference claims across multiple sources when possible.
+- Distinguish between facts, consensus, and speculation.
+- Note confidence level: certain, likely, uncertain.
+- Flag when information may be outdated relative to your knowledge cutoff.
+- Define problems clearly before proposing solutions. Consider at least two alternatives.
+
+### Writing Standards
+
+- **Concise over verbose.** Say it in fewer words.
+- **Active voice.** "The team decided" not "It was decided by the team."
+- **Specific over general.** "Latency increased 3x" not "Performance degraded significantly."
+- **British English** unless the context requires otherwise.
+- **No filler.** Cut "In order to" (use "To"), "It should be noted that" (just state it).
+- **Tables over prose** for comparisons, options, and structured data.
+- Lead with the conclusion or recommendation. Detail follows.
+
+### Communication Style
+
+- Direct and to the point. No preamble or postamble.
+- Match the register of the request — technical for technical, plain for plain.
+- If a one-word answer is sufficient, give a one-word answer.
+- Do not repeat the question back. Do not summarise what you are about to do. Just do it.
+- When disagreeing, lead with the evidence.
+
+### Working With Files
+
+- Read before writing — understand existing content and conventions.
+- Follow existing conventions in the target directory (naming, format, structure).
+- No emoji unless explicitly requested.
+- Use markdown with consistent heading hierarchy.
+- Prefer editing existing files over creating new ones.
+- Batch independent operations for efficiency.
+
+### Assessment and Review Workflows
+
+When asked to assess or review an application, codebase, or system:
+
+- **PR-level:** Apply the relevant `standards/*.md` for the change.
+
+Standards file inventory:
+
+| Concern | File |
+| --- | --- |
+| SOLID, DRY, Clean Code, Clean Architecture | `standards/code-quality.md` |
+| Security — OWASP Top 10 | `standards/security.md` |
+| Testing — Test Trophy Model | `standards/testing.md` |
+| CI/CD — Quality Gates & Fast Flow | `standards/ci-cd.md` |
+| Observability — OpenTelemetry | `standards/observability.md` |
+| Resilience & Fault Tolerance | `standards/resilience.md` |
+| Performance & Scalability | `standards/performance.md` |
+| Cost Optimisation | `standards/cost-optimisation.md` |
+| Operational Excellence & IaC | `standards/operational-excellence.md` |
+| API Design | `standards/api-design.md` |
+| AWS Well-Architected (6 pillars) | `standards/aws-well-architected.md` |
+| GDPR Compliance | `standards/gdpr.md` |
+| PCI DSS Compliance | `standards/pci-dss.md` |
 
 ---
 
