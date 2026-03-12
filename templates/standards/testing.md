@@ -226,11 +226,11 @@ Adapt for your ecosystem:
 
 | Ecosystem  | Runner          | Coverage tool         | Config file      |
 | ---------- | --------------- | --------------------- | ---------------- |
-| Python     | pytest          | coverage / pytest-cov | `pyproject.toml` |
-| JavaScript | Jest / Vitest   | built-in / c8 / v8    | `jest.config.*`  |
-| Go         | `go test`       | `-coverprofile`       | n/a (flags)      |
-| Rust       | `cargo test`    | cargo-tarpaulin       | `Cargo.toml`     |
+| Java       | JUnit 5         | JaCoCo                | `pom.xml` / `build.gradle` |
 | C# / .NET  | xUnit / NUnit   | coverlet              | `.runsettings`   |
+| JavaScript | Jest / Vitest   | built-in / c8 / v8    | `jest.config.*`  |
+| PHP        | PHPUnit         | built-in / pcov       | `phpunit.xml`    |
+| Python     | pytest          | coverage / pytest-cov | `pyproject.toml` |
 
 ---
 

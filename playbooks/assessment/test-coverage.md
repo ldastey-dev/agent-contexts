@@ -114,7 +114,7 @@ Actively search the codebase for bugs. For each bug found:
 |---|---|
 | Linter configuration | What rules are enabled? Are they appropriate for the language and framework? Are there unjustified rule suppressions? |
 | Consistency | Is the same configuration applied across the entire codebase? Are there files or directories excluded without justification? |
-| Formatting | Is code formatting automated and enforced (Prettier, Black, gofmt)? Is it gating in CI? |
+| Formatting | Is code formatting automated and enforced (Prettier, PHP-CS-Fixer, `dotnet format`, Checkstyle)? Is it gating in CI? |
 | Custom rules | Are there project-specific rules that encode team conventions or catch common mistakes? |
 | IDE integration | Are linting rules available in developer IDEs for fast feedback? |
 

@@ -11,19 +11,20 @@ no manual override, no "I'll fix it in the next PR."
 
 Substitute these placeholders with your project's actual tooling:
 
-| Placeholder          | Example (Python/uv)       | Example (Node/pnpm)          | Example (Go)            |
-| -------------------- | ------------------------- | ----------------------------- | ----------------------- |
-| `[PACKAGE_MANAGER]`  | `uv`                      | `pnpm`                        | `go mod`                |
-| `[INSTALL_CMD]`      | `uv sync --frozen`        | `pnpm install --frozen-lockfile` | `go mod download`    |
-| `[LINTER]`           | `ruff check src/ tests/`  | `eslint .`                    | `golangci-lint run`     |
-| `[FORMATTER]`        | `ruff format --check`     | `prettier --check .`          | `gofmt -l .`            |
-| `[TYPE_CHECKER]`     | `mypy src/`               | `tsc --noEmit`                | *(built-in)*            |
-| `[TEST_RUNNER]`      | `pytest`                  | `vitest run`                  | `go test ./...`         |
-| `[COV_FLAG]`         | `--cov=[PKG] --cov-fail-under=90` | `--coverage`           | `-coverprofile=cov.out` |
-| `[VULN_SCANNER]`     | `pip-audit`               | `pnpm audit --audit-level=high` | `govulncheck ./...`  |
-| `[BUILD_CMD]`        | `uv build`                | `pnpm build`                  | `go build ./...`        |
-| `[PUBLISH_CMD]`      | `uv publish`              | `pnpm publish`                | `goreleaser`            |
-| `[PACKAGE_NAME]`     | `my_package`              | `@scope/my-lib`               | `github.com/org/repo`   |
+| Placeholder          | Example (Java/Maven)               | Example (C#/.NET)                    | Example (Node/pnpm)                   | Example (PHP/Composer)          |
+| -------------------- | ---------------------------------- | ------------------------------------ | -------------------------------------- | ------------------------------- |
+| `[CI_PLATFORM]`      | GitHub Actions                     | Azure DevOps Pipelines               | GitHub Actions                         | GitHub Actions                  |
+| `[PACKAGE_MANAGER]`  | `mvn` / `gradle`                   | `dotnet`                             | `pnpm`                                 | `composer`                      |
+| `[INSTALL_CMD]`      | `mvn dependency:resolve`           | `dotnet restore`                     | `pnpm install --frozen-lockfile`       | `composer install --no-dev`     |
+| `[LINTER]`           | `checkstyle` / `spotbugs`          | `dotnet format --verify-no-changes`  | `eslint .`                             | `phpstan analyse`               |
+| `[FORMATTER]`        | `spotless:check`                   | `dotnet format --check`              | `prettier --check .`                   | `php-cs-fixer fix --dry-run`    |
+| `[TYPE_CHECKER]`     | *(built-in)*                       | *(built-in)*                         | `tsc --noEmit`                         | `phpstan` (level max)           |
+| `[TEST_RUNNER]`      | `mvn test` / `gradle test`         | `dotnet test`                        | `vitest run`                           | `phpunit`                       |
+| `[COV_FLAG]`         | JaCoCo plugin                      | `--collect:"XPlat Code Coverage"`    | `--coverage`                           | `--coverage-clover`             |
+| `[VULN_SCANNER]`     | `mvn dependency-check:check`       | `dotnet list package --vulnerable`   | `pnpm audit --audit-level=high`        | `composer audit`                |
+| `[BUILD_CMD]`        | `mvn package -DskipTests`          | `dotnet build`                       | `pnpm build`                           | `composer dump-autoload -o`     |
+| `[PUBLISH_CMD]`      | `mvn deploy`                       | `dotnet nuget push`                  | `pnpm publish`                         | `composer publish` (Packagist)  |
+| `[PACKAGE_NAME]`     | `com.org:my-service`               | `MyProject.csproj`                   | `@scope/my-lib`                        | `vendor/my-package`             |
 
 ---
 
@@ -43,8 +44,8 @@ dependencies without regenerating the lock file will fail here.
 [LINTER]
 ```
 Zero warnings required. Lint rules are configured in the project's config file
-(e.g., `pyproject.toml`, `.eslintrc`, `golangci.yml`). Inline suppressions
-(e.g., `// nolint`, `/* eslint-disable */`, `# noqa`) require an accompanying
+(e.g., `pom.xml`, `.eslintrc`, `phpstan.neon`, `.editorconfig`). Inline suppressions
+(e.g., `@SuppressWarnings`, `/* eslint-disable */`, `# noqa`, `#pragma warning disable`) require an accompanying
 comment explaining why.
 
 ### Stage 3 · Format Check
@@ -86,7 +87,9 @@ normal CI runs to keep feedback fast.
 
 ### Stage 8 · Secret Scanning
 
-- Enable at the repository level via **GitHub Advanced Security** / secret scanning.
+- Enable secret scanning at the repository/organisation level using your
+  platform's built-in feature (e.g., GitHub Advanced Security, Azure DevOps
+  Credential Scanner) or a dedicated tool.
 - Optionally add a CI step using a tool like `gitleaks`, `trufflehog`, or the
   scanner of your choice to catch credential leaks before they reach the remote.
 
@@ -94,10 +97,11 @@ normal CI runs to keep feedback fast.
 
 ## 3 · Branch Protection Rules
 
-Configure these on the `main` branch:
+Configure these on the `main` branch using your platform's branch policy
+settings (GitHub branch protection rules, Azure DevOps branch policies, etc.):
 
 ```
-✅ Require status checks to pass before merging
+✅ Require status checks / build validation to pass before merging
    ✅ lint
    ✅ format-check
    ✅ type-check
@@ -105,16 +109,20 @@ Configure these on the `main` branch:
    ✅ audit-dependencies
 ✅ Require branches to be up to date before merging
 ✅ Require at least 1 approving review
-✅ Dismiss stale reviews when new commits are pushed
-✅ Do not allow bypassing the above settings (including admins)
+✅ Reset / dismiss approvals when new commits are pushed
+✅ Do not allow bypassing the above settings (including admins / project admins)
 ```
 
 ---
 
-## 4 · GitHub Actions Workflow Template
+## 4 · CI Pipeline Templates
 
-Create `.github/workflows/ci.yml` — replace every `[PLACEHOLDER]` with your
-project-specific commands:
+Choose the template that matches your CI platform. Replace every `[PLACEHOLDER]`
+with your project-specific commands from the table in Section 1.
+
+### GitHub Actions
+
+Create `.github/workflows/ci.yml`:
 
 ```yaml
 name: CI
@@ -175,6 +183,68 @@ jobs:
         run: "[TEST_RUNNER] --tag integration"
 ```
 
+### Azure DevOps Pipelines
+
+Create `azure-pipelines.yml`:
+
+```yaml
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: "ubuntu-latest"
+
+steps:
+  # ── Setup (language runtime + package manager) ──
+  - script: |
+      # e.g., NodeTool@0, UsePythonVersion@0, UseDotNet@2
+      echo "TODO: install runtime and [PACKAGE_MANAGER]"
+    displayName: "Setup environment"
+
+  # ── Stage 1 · Install ──
+  - script: "[INSTALL_CMD]"
+    displayName: "Install dependencies"
+
+  # ── Stage 2 · Lint ──
+  - script: "[LINTER]"
+    displayName: "Lint"
+
+  # ── Stage 3 · Format ──
+  - script: "[FORMATTER]"
+    displayName: "Format check"
+
+  # ── Stage 4 · Type check ──
+  - script: "[TYPE_CHECKER]"
+    displayName: "Type check"
+
+  # ── Stage 5 · Security scan ──
+  - script: "[VULN_SCANNER]"
+    displayName: "Audit dependencies"
+
+  # ── Stage 6 · Unit tests + coverage ──
+  - script: "[TEST_RUNNER] [COV_FLAG]"
+    displayName: "Test with coverage"
+
+  - task: PublishPipelineArtifact@1
+    condition: always()
+    inputs:
+      targetPath: "coverage.*"
+      artifact: "coverage-report"
+    displayName: "Upload coverage report"
+
+  # ── Stage 7 · Integration tests (optional) ──
+  - script: "[TEST_RUNNER] --tag integration"
+    condition: eq(variables['RUN_INTEGRATION_TESTS'], 'true')
+    displayName: "Integration tests"
+```
+
 ---
 
 ## 5 · Local Pre-commit Checks
@@ -225,7 +295,8 @@ On `push` to a `v*` tag:
 1. All CI gates above must pass on the tagged commit.
 2. Build the distributable: `[BUILD_CMD]`
 3. Publish to the relevant registry: `[PUBLISH_CMD]`
-4. Create a GitHub Release with auto-generated release notes.
+4. Create a release (e.g., GitHub Release, Azure DevOps release) with
+   auto-generated release notes.
 
 ---
 
@@ -240,8 +311,9 @@ lost developer productivity.
 - **Parallelise independent stages.** Lint, format, and type-check have no
   dependencies on each other — run them concurrently. Use job-level
   parallelism in your CI platform (`jobs:` in GitHub Actions, `parallel:` in
-  GitLab CI).
-- **Cache aggressively.** Dependencies (`actions/cache`), build artefacts,
+  GitLab CI, parallel `steps` or `stages` in Azure Pipelines).
+- **Cache aggressively.** Dependencies (e.g., `actions/cache` in GitHub,
+  `Cache@2` task in Azure Pipelines), build artefacts,
   and Docker layers. A cold CI run should be the exception, not the norm.
   Cache keys should include the lock file hash.
 - **Fail fast.** If Stage 1 fails, do not run Stages 2–8. Use `fail-fast`
@@ -303,13 +375,14 @@ Before your first CI run in a new repo, confirm each item:
 
 | #  | Decision                                    | Answered? |
 | -- | ------------------------------------------- | --------- |
-| 1  | Which package manager? (`[PACKAGE_MANAGER]`) | ☐         |
-| 2  | Which linter? (`[LINTER]`)                   | ☐         |
-| 3  | Which formatter? (`[FORMATTER]`)             | ☐         |
-| 4  | Which type checker? (`[TYPE_CHECKER]`)       | ☐         |
-| 5  | Which test runner? (`[TEST_RUNNER]`)         | ☐         |
-| 6  | Minimum coverage threshold?                  | ☐         |
-| 7  | Which vulnerability scanner? (`[VULN_SCANNER]`) | ☐     |
-| 8  | Integration tests needed? If so, trigger mechanism? | ☐  |
-| 9  | Secret scanning tool configured?             | ☐         |
-| 10 | Release registry and publish command?        | ☐         |
+| 1  | Which CI platform? (`[CI_PLATFORM]`)         | ☐         |
+| 2  | Which package manager? (`[PACKAGE_MANAGER]`) | ☐         |
+| 3  | Which linter? (`[LINTER]`)                   | ☐         |
+| 4  | Which formatter? (`[FORMATTER]`)             | ☐         |
+| 5  | Which type checker? (`[TYPE_CHECKER]`)       | ☐         |
+| 6  | Which test runner? (`[TEST_RUNNER]`)         | ☐         |
+| 7  | Minimum coverage threshold?                  | ☐         |
+| 8  | Which vulnerability scanner? (`[VULN_SCANNER]`) | ☐     |
+| 9  | Integration tests needed? If so, trigger mechanism? | ☐  |
+| 10 | Secret scanning tool configured?             | ☐         |
+| 11 | Release registry and publish command?        | ☐         |

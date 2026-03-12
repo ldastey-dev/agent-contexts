@@ -7,7 +7,7 @@ Import into any repository to get consistent AI-assisted development across all 
 
 | Agent | File(s) read | How |
 | ----- | ------------ | --- |
-| **Devin** | `AGENTS.md` | Native (always-on) |
+| **Devin** | `AGENTS.md`, `.devin/devin.json` | Native — reads `AGENTS.md` (always-on) + `.devin/devin.json` for DeepWiki and knowledge config |
 | **Cursor** | `.cursor/rules/standards.mdc` → `AGENTS.md` | Redirect with `alwaysApply: true` |
 | **Windsurf** | `.windsurfrules` → `AGENTS.md` | Redirect |
 | **Claude Code** | `CLAUDE.md` → `AGENTS.md` | Delegation (reads `AGENTS.md` when instructed) |
@@ -33,6 +33,8 @@ Then fill in all `[CONFIGURE]` sections in:
 templates/                              Importable agent config
   AGENTS.md                             Canonical coding standards (Devin, Cursor, Windsurf)
   CLAUDE.md                             Claude Code thin delegator → AGENTS.md
+  .devin/
+    devin.json                          Devin DeepWiki config and agent instruction pointer
   standards/                            Detailed standards (all agents)
     api-design.md                       REST/GraphQL API design standards
     aws-well-architected.md             AWS Well-Architected Framework (6 pillars)
@@ -122,7 +124,7 @@ Standards are maintained in **one place only**:
 | Per-concern detail | `templates/standards/{concern}.md` |
 | Copilot project scaffold | `templates/.github/copilot-instructions.md` |
 
-`templates/CLAUDE.md`, `.windsurfrules`, `.cursor/rules/standards.mdc`, and `.clinerules` all delegate to `AGENTS.md` — do not duplicate standards in these files.
+`templates/CLAUDE.md`, `.windsurfrules`, `.cursor/rules/standards.mdc`, `.clinerules`, and `.devin/devin.json` all delegate to `AGENTS.md` — do not duplicate standards in these files.
 
 ## Editing Guidelines
 

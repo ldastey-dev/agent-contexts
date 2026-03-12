@@ -65,7 +65,7 @@ must execute even when exceptions occur.
 | Closures retaining large scopes | Callbacks or lambdas that capture references to large objects, preventing their collection | Minimise closure scope. Null out references when no longer needed. Use `WeakRef` for optional references to large objects. |
 | Unbounded caches or collections | Maps, lists, or dictionaries that grow without bound over the lifetime of the process | Enforce maximum size and eviction policy on every in-memory collection that grows over time. Use `WeakMap`/`WeakSet` where keys are objects that should be GC-eligible. |
 | Static/global references | Static fields or module-level variables holding references to request-scoped or transient objects | Never store request-scoped data in static/global state. Use scoped containers or request-scoped DI lifetimes. |
-| Disposable objects not disposed | Classes implementing `IDisposable` (C#), `Closeable`/`AutoCloseable` (Java), context managers (Python) not properly released | Always use language-idiomatic disposal: `using` (C#), `try-with-resources` (Java), `with` (Python), `defer` (Go). Never rely on finalizers or `__del__` for cleanup. |
+| Disposable objects not disposed | Classes implementing `IDisposable` (C#), `Closeable`/`AutoCloseable` (Java), context managers (Python) not properly released | Always use language-idiomatic disposal: `using` (C#), `try-with-resources` (Java), `with` (Python), `try`/`finally` (PHP). Never rely on finalizers or `__del__` for cleanup. |
 
 ---
 
