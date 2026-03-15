@@ -1,7 +1,18 @@
-# AI Agent Prompts & Playbooks
+# AI Agent Prompts & Playbooks for Context Engineering
 
-A template library of coding standards, assessment playbooks, PR review playbooks, reusable skills, and agent configuration files.
-Import into any repository to get consistent AI-assisted development across all major coding agents.
+A template library of coding standards, assessment playbooks, PR review playbooks, reusable skills, and agent configuration files. Import into any repository to get consistent AI-assisted development across all major coding agents.
+
+## Context-Optimised Architecture
+
+Content is organised into three tiers that control when files load into agent context:
+
+| Tier | Directory | When loaded | Purpose |
+| ---- | --------- | ----------- | ------- |
+| **1 — Always in context** | `core/` | Session start | Lean project config, workflow rules, standards reference table |
+| **2 — Auto-matched on demand** | `skills/` | When task matches skill description | Playbooks, runbooks, and standards as Claude Code skills |
+| **3 — Reference** | `standards/` | When explicitly read | Detailed per-concern standards accessible to all agents |
+
+**Result:** ~85% reduction in startup context. Agents get the minimum context needed for any task, with detailed guidance available on demand.
 
 ## Supported Agents
 
@@ -10,109 +21,86 @@ Import into any repository to get consistent AI-assisted development across all 
 | **Devin** | `AGENTS.md`, `.devin/devin.json` | Native — reads `AGENTS.md` (always-on) + `.devin/devin.json` for DeepWiki and knowledge config |
 | **Cursor** | `.cursor/rules/standards.mdc` → `AGENTS.md` | Redirect with `alwaysApply: true` |
 | **Windsurf** | `.windsurfrules` → `AGENTS.md` | Redirect |
-| **Claude Code** | `CLAUDE.md` → `AGENTS.md` | Delegation (reads `AGENTS.md` when instructed) |
-| **GitHub Copilot** | `.github/copilot-instructions.md` | Native auto-load; can reference `AGENTS.md` and shared standards |
+| **Claude Code** | `CLAUDE.md` → `AGENTS.md` + `.claude/skills/` | Delegation + on-demand skill loading |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | Native auto-load; references `standards/` |
 | **Cline / Roo Code** | `.clinerules` → `AGENTS.md` | Redirect |
 
-`AGENTS.md` is the **single source of truth** for all coding standards. Every other agent file either reads it natively or redirects to it.
+`AGENTS.md` is the **single source of truth** for project conventions and workflow rules. Agent config files delegate to it.
 
 ## Quick Start
 
 ```bash
-cp -a templates/. <target-repo>/
+./deploy.sh /path/to/target-repo
 ```
 
 Then fill in all `[CONFIGURE]` sections in:
 
 - `AGENTS.md` — project overview, tech stack, architecture, conventions
+- `CLAUDE.md` — project-specific rules
 - `.github/copilot-instructions.md` — project context, tech stack, architecture
 
 ## Repository Structure
 
 ```text
-templates/                              Importable agent config
-  AGENTS.md                             Canonical coding standards (Devin, Cursor, Windsurf)
-  CLAUDE.md                             Claude Code thin delegator → AGENTS.md
-  .devin/
-    devin.json                          Devin DeepWiki config and agent instruction pointer
-  standards/                            Detailed standards (all agents)
-    api-design.md                       REST/GraphQL API design standards
-    aws-well-architected.md             AWS Well-Architected Framework (6 pillars)
-    ci-cd.md                            CI/CD pipeline and quality gates
-    code-quality.md                     SOLID, Clean Code, Clean Architecture
-    cost-optimisation.md                FinOps and cost-aware engineering
-    gdpr.md                             GDPR data protection standards
-    observability.md                    OpenTelemetry, Golden Signals, 3 pillars
-    operational-excellence.md           Runbooks, config, change management
-    pci-dss.md                          PCI DSS payment card data standards
-    performance.md                      Performance and scalability patterns
-    resilience.md                       Circuit breakers, retries, bulkheads
-    security.md                         OWASP Top 10 security checklist
-    testing.md                          Test Trophy Model, coverage, fixtures
-  .github/
-    copilot-instructions.md             GitHub Copilot global instructions
-  .cursor/rules/standards.mdc          Cursor redirect → AGENTS.md
-  .windsurfrules                        Windsurf redirect → AGENTS.md
+core/                                   Tier 1 — always in context (→ target repo root)
+  CLAUDE.md                             Claude Code config (lean, ~30 lines)
+  AGENTS.md                             Canonical conventions hub (lean, ~265 lines)
   .clinerules                           Cline/Roo redirect → AGENTS.md
+  .windsurfrules                        Windsurf redirect → AGENTS.md
+  .cursor/rules/standards.mdc           Cursor redirect → AGENTS.md
+  .devin/devin.json                     Devin config + AGENTS.md pointer
+  .github/copilot-instructions.md       GitHub Copilot project instructions
+  .claude/settings.json                 Claude Code permissions + hooks template
 
-playbooks/                              Standalone prompts (paste into any agent chat)
-  assessment/                           Whole-codebase evaluations
-    full.md                             Combined single-pass assessment
-    architecture.md                     Principal Architect review
-    security.md                         Security Engineer review
-    test-coverage.md                    Testing strategy review
-    code-quality.md                     SOLID and Clean Code review
-    iac-maturity.md                     Infrastructure as Code review
-    performance-resilience.md           Performance and resilience review
-    observability.md                    Observability maturity review
-    api-design.md                       API design and DX review
-    technical-debt.md                   Systematic debt identification and paydown
-    compliance.md                       GDPR and PCI DSS regulatory assessment
-  review/                               PR / change reviews
-    architecture.md                     Architectural alignment review (all 6 Well-Architected pillars)
-    security.md                         Security vulnerability review
-    test-coverage.md                    Test quality and coverage review
-    code-quality.md                     SOLID and Clean Code review
-    performance-resilience.md           Performance and resilience review
-    observability.md                    Observability completeness review
-    api-design.md                       API design and DX review
-    iac-maturity.md                     Infrastructure as Code review
-    compliance.md                       GDPR and PCI DSS compliance review
-  planning/                             Upfront design work
-    design-doc.md                       Technical Design Document template
-    adr.md                              ADR template (Michael Nygard format)
-    risk-assessment.md                  Technical risk register and mitigation
-    spike.md                            Timeboxed spike / research investigation
+standards/                              Tier 3 — reference (→ target standards/)
+  code-quality.md                       SOLID, DRY, Clean Code, Clean Architecture
+  security.md                           OWASP Top 10 security checklist
+  testing.md                            Test Trophy Model, coverage, fixtures
+  ci-cd.md                              CI/CD pipeline and quality gates
+  observability.md                      OpenTelemetry, Golden Signals, 3 pillars
+  resilience.md                         Circuit breakers, retries, bulkheads
+  performance.md                        Performance and scalability patterns
+  cost-optimisation.md                  FinOps and cost-aware engineering
+  operational-excellence.md             Runbooks, config, change management
+  api-design.md                         REST/GraphQL API design standards
+  aws-well-architected.md               AWS Well-Architected Framework (6 pillars)
+  gdpr.md                               GDPR data protection standards
+  pci-dss.md                            PCI DSS payment card data standards
 
-skills/                                 Reusable procedures (invoke as part of tasks)
-  safe-refactoring.md                   General-purpose refactoring runbook
-  extract-module.md                     Extract module / service from monolith
-  dependency-upgrade.md                 Major dependency version upgrade
+skills/                                 Tier 2 — on demand (→ target .claude/skills/)
+  assess-*/SKILL.md                     Assessment playbooks (11 skills)
+  review-*/SKILL.md                     PR review playbooks (9 skills)
+  plan-*/SKILL.md                       Planning playbooks (4 skills)
+  safe-refactor/SKILL.md                Behaviour-preserving refactoring runbook
+  extract-module/SKILL.md               Module/service extraction runbook
+  dependency-upgrade/SKILL.md           Major dependency upgrade runbook
+  ref-*/SKILL.md                        Standards as model-invocable skills (13 skills)
 ```
+
+## How Skills Work
+
+Skills are Claude Code's mechanism for on-demand context loading. Each skill has:
+
+- A **description** (~100 bytes) loaded at session start — used for automatic matching
+- **Full content** loaded only when the skill fires (user invocation or model match)
+
+| Category | Prefix | Invocation | Model-invocable |
+| -------- | ------ | ---------- | --------------- |
+| Assessment playbooks | `assess-` | `/assess-security`, `/assess-architecture`, etc. | Yes |
+| Review playbooks | `review-` | `/review-security`, `/review-code-quality`, etc. | Yes |
+| Planning playbooks | `plan-` | `/plan-design-doc`, `/plan-adr`, etc. | Yes |
+| Runbooks | (none) | `/safe-refactor`, `/extract-module`, `/dependency-upgrade` | Yes |
+| Standards | `ref-` | Hidden from menu | Yes (auto-loads when domain matches) |
 
 ## Conventions
 
 - **British English** throughout (optimisation, behaviour, colour)
 - **Kebab-case** file names
-- In `templates/standards/*`, use **`## N · Section Title`** heading style (middle dot separator)
+- In `standards/`, use **`## N · Section Title`** heading style (middle dot separator)
 - **`[CONFIGURE]`** in headings marks project-specific sections
 - **`<!-- PROJECT: ... -->`** HTML comments mark inline customisation points
 - SOLID principles always use **full names** (never SRP, OCP, etc.)
-
-## Using Playbooks, Reviews, and Skills
-
-| Type | Purpose | Location |
-| ---- | ------- | -------- |
-| **Standards** | Rules and criteria agents follow continuously | `templates/standards/` |
-| **Playbooks** | Complete standalone prompts producing a defined output | `playbooks/` |
-| **Skills** | Reusable procedures applied to specific targets | `skills/` |
-
-Paste playbooks and skills into any agent conversation:
-
-- **Whole-codebase assessment:** `playbooks/assessment/` — deep evaluations producing reports with remediation plans
-- **PR / change review:** `playbooks/review/` — focused reviews of individual changes against specific quality aspects
-- **Planning:** `playbooks/planning/` — document generation (TDD, ADR, risk assessment, spike research)
-- **Skills:** `skills/` — reusable procedures (safe refactoring, module extraction, dependency upgrade)
+- All instructions prescriptive: "must", "never", "always"
 
 ## Updating Standards
 
@@ -120,15 +108,16 @@ Standards are maintained in **one place only**:
 
 | What | Where |
 | ---- | ----- |
-| Core coding standards | `templates/AGENTS.md` |
-| Per-concern detail | `templates/standards/{concern}.md` |
-| Copilot project scaffold | `templates/.github/copilot-instructions.md` |
+| Project conventions and workflow | `core/AGENTS.md` |
+| Per-concern detail | `standards/{concern}.md` |
+| Standards as skills (Claude) | `skills/ref-{concern}/SKILL.md` |
+| Copilot project scaffold | `core/.github/copilot-instructions.md` |
 
-`templates/CLAUDE.md`, `.windsurfrules`, `.cursor/rules/standards.mdc`, `.clinerules`, and `.devin/devin.json` all delegate to `AGENTS.md` — do not duplicate standards in these files.
+When updating a detailed standard, update both `standards/{concern}.md` and `skills/ref-{concern}/SKILL.md` to keep them in sync.
 
 ## Editing Guidelines
 
 - Do not modify templates unless explicitly asked.
 - Keep standards prescriptive — "must", "never", "always" — not advisory.
 - Every instruction file ends with `## Non-Negotiables` and `## Decision Checklist`.
-- When updating a standard, update it in ONE place only (the canonical source).
+- When updating a standard, update it in the canonical source and its skill wrapper.
