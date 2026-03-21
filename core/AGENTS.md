@@ -224,6 +224,7 @@ Standards file inventory:
 | AWS Well-Architected (6 pillars) | `standards/aws-well-architected.md` |
 | GDPR Compliance | `standards/gdpr.md` |
 | PCI DSS Compliance | `standards/pci-dss.md` |
+| Accessibility — WCAG 2.2 Level AA | `standards/accessibility.md` |
 
 ---
 
@@ -257,6 +258,7 @@ The following standards are non-negotiable. Do not weaken them. Detailed guidanc
 | AWS | 6 pillars: OpEx, Security, Reliability, Perf, Cost, Sustainability | `standards/aws-well-architected.md` |
 | GDPR | Lawful basis, data minimisation, subject rights | `standards/gdpr.md` |
 | PCI DSS | CDE scoping, AES-256, TLS 1.2+ | `standards/pci-dss.md` |
+| Accessibility | WCAG 2.2 AA, keyboard, ARIA, contrast | `standards/accessibility.md` |
 
 ---
 
