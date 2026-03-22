@@ -1,16 +1,16 @@
 # agent-contexts
 
-Template repository for AI agent configuration, standards, playbooks, and skills.
+Template repository for AI agent configuration, standards, playbooks, and conventions.
 
 ## Structure
 
 - `core/` — always-in-context templates (Tier 1, copy to target repo root)
-- `standards/` — detailed reference standards (Tier 3, copy to target standards/)
-- `skills/` — Claude Code skills (Tier 2, copy to target .claude/skills/)
+- `standards/` — detailed reference standards (Tier 3, copy to target .context/standards/)
+- `playbooks/` — on-demand playbooks (Tier 2, copy to target .context/playbooks/)
 
 ## Deployment
 
-Run `./deploy.sh /path/to/target-repo` to copy templates.
+Run `./deploy.sh /path/to/target-repo` to copy templates and generate Claude Code skill wrappers.
 Then fill in all `[CONFIGURE]` sections in `AGENTS.md` and `CLAUDE.md`.
 
 ## Conventions
