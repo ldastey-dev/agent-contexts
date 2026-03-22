@@ -110,9 +110,11 @@ Available context types:
 
 ---
 
-## Core Principles
+## Mandated Standards
 
-These standards are non-negotiable. Do not weaken them.
+The following standards are non-negotiable. Do not weaken them. Detailed guidance is in `.context/standards/`.
+
+### Core Principles
 
 - **Simplicity First:** Make every change as simple as possible. Impact minimal code.
 - **No Laziness:** Find root causes. No temporary fixes. Senior developer standards.
@@ -120,6 +122,25 @@ These standards are non-negotiable. Do not weaken them.
 - **Security is Non-Negotiable:** Never log secrets, commit credentials, or introduce injection vectors.
 - **Test What You Change:** If you modify behaviour, prove it works. If you refactor, prove nothing broke.
 - **Evidence Over Opinion:** Reference specific code, config, or behaviour. No vague assertions.
+
+### Standards Reference
+
+| Standard | Key Rule | Detail |
+| --- | --- | --- |
+| Code Quality | SOLID, DRY, cyclomatic complexity < 10 | `.context/standards/code-quality.md` |
+| Security | OWASP Top 10 compliance | `.context/standards/security.md` |
+| Testing | >= 90% coverage, Test Trophy Model | `.context/standards/testing.md` |
+| CI/CD | 7-stage pipeline, < 10 min full CI | `.context/standards/ci-cd.md` |
+| Observability | OpenTelemetry, structured JSON logging | `.context/standards/observability.md` |
+| Resilience | Circuit breakers, retries with backoff | `.context/standards/resilience.md` |
+| Performance | No N+1, pagination, resource disposal | `.context/standards/performance.md` |
+| Cost | Cache before network, FinOps principles | `.context/standards/cost-optimisation.md` |
+| Operations | IaC, env vars, small focused PRs | `.context/standards/operational-excellence.md` |
+| API Design | OpenAPI 3+, REST, RFC 7807 errors | `.context/standards/api-design.md` |
+| AWS | 6 pillars: OpEx, Security, Reliability, Perf, Cost, Sustainability | `.context/standards/aws-well-architected.md` |
+| GDPR | Lawful basis, data minimisation, subject rights | `.context/standards/gdpr.md` |
+| PCI DSS | CDE scoping, AES-256, TLS 1.2+ | `.context/standards/pci-dss.md` |
+| Accessibility | WCAG 2.2 AA, keyboard, ARIA, contrast | `.context/standards/accessibility.md` |
 
 ---
 
