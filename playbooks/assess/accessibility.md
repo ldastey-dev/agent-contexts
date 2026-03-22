@@ -44,108 +44,108 @@ Evaluate the application against each criterion below. Assess each area independ
 
 | Aspect | What to evaluate |
 |---|---|
-| Text alternatives (1.1.1) | Every meaningful image has descriptive alt text. Decorative images use `alt=""`. Complex images have long descriptions. Icon-only buttons and links have accessible names. |
-| Captions (1.2.2, 1.2.4) | Pre-recorded video has synchronised captions. Live video has real-time captions. Captions are accurate, synchronised, and complete. |
-| Audio descriptions (1.2.5) | Pre-recorded video has audio descriptions for visual-only information. |
-| Info and relationships (1.3.1) | Structure conveyed visually is also conveyed programmatically — headings, lists, tables, landmarks, labels. |
-| Meaningful sequence (1.3.2) | Reading order is correct when CSS is removed. |
-| Orientation (1.3.4) | Content is not locked to a single orientation. |
-| Input purpose (1.3.5) | Form fields use appropriate `autocomplete` attributes. |
-| Colour as information (1.4.1) | Colour is never the sole means of conveying information. |
-| Contrast (1.4.3, 1.4.11) | Text meets 4.5:1 (normal) or 3:1 (large). Non-text UI components meet 3:1. |
-| Resize (1.4.4) | Content is functional at 200% zoom. |
-| Images of text (1.4.5) | Real text used instead of images of text. |
-| Reflow (1.4.10) | Content reflows at 320px width without horizontal scrolling. |
-| Text spacing (1.4.12) | Content tolerates user-overridden text spacing (line-height 1.5×, paragraph 2×, letter 0.12×, word 0.16×). |
-| Content on hover/focus (1.4.13) | Tooltips and popovers are dismissible, hoverable, and persistent. |
+| Text alternatives (1.1.1) | Verify all images, icons, and non-text content comply with `standards/accessibility.md` §2.1 (Text Alternatives). Check for missing alt text, decorative images with descriptive alt, and icon-only interactive elements without accessible names. |
+| Captions (1.2.2, 1.2.4) | Verify captions on pre-recorded and live video comply with `standards/accessibility.md` §2.2 (Time-based Media). Check caption accuracy, synchronisation, and completeness. |
+| Audio descriptions (1.2.5) | Verify audio descriptions comply with `standards/accessibility.md` §2.2 (Time-based Media). Check whether visual-only information in pre-recorded video is described in audio. |
+| Info and relationships (1.3.1) | Verify programmatic structure complies with `standards/accessibility.md` §2.3 (Adaptable Content). Check that visually conveyed structure uses semantic markup — headings, lists, tables, landmarks, labels. |
+| Meaningful sequence (1.3.2) | Verify reading order complies with `standards/accessibility.md` §2.3 (Adaptable Content). Disable CSS and confirm the content sequence remains meaningful. |
+| Orientation (1.3.4) | Verify orientation handling complies with `standards/accessibility.md` §2.3 (Adaptable Content). Check for content locked to a single orientation without essential justification. |
+| Input purpose (1.3.5) | Verify autocomplete usage complies with `standards/accessibility.md` §2.3 (Adaptable Content) and §7 (Forms & Interactive Components — Autocomplete). Check that personal data fields use the specified `autocomplete` attribute values. |
+| Colour as information (1.4.1) | Verify colour usage complies with `standards/accessibility.md` §2.4 (Distinguishable). Check for instances where colour is the sole means of conveying information. |
+| Contrast (1.4.3, 1.4.11) | Verify contrast ratios comply with the table in `standards/accessibility.md` §2.4 (Distinguishable — Contrast Requirements). Measure text, UI components, and focus indicators against the specified minimums. |
+| Resize (1.4.4) | Verify zoom behaviour complies with `standards/accessibility.md` §2.4 (Distinguishable). Test all content and functionality at 200% browser zoom. |
+| Images of text (1.4.5) | Verify text rendering complies with `standards/accessibility.md` §2.4 (Distinguishable). Check for images of text where styled real text could achieve the same presentation. |
+| Reflow (1.4.10) | Verify reflow behaviour complies with `standards/accessibility.md` §2.4 (Distinguishable) and §9 (Responsive & Adaptive Design — Reflow). Test at 320px width for horizontal scrolling. |
+| Text spacing (1.4.12) | Verify text spacing tolerance complies with `standards/accessibility.md` §2.4 (Distinguishable) and §9 (Responsive & Adaptive Design — Text Spacing). Apply the specified override values and check for clipped or hidden content. |
+| Content on hover/focus (1.4.13) | Verify hover/focus content complies with `standards/accessibility.md` §2.4 (Distinguishable). Check that tooltips and popovers are dismissible, hoverable, and persistent. |
 
 ### 2.2 Operable (WCAG Principle 2)
 
 | Aspect | What to evaluate |
 |---|---|
-| Keyboard (2.1.1) | All functionality operable via keyboard. |
-| No keyboard trap (2.1.2) | Focus is never trapped. Modals manage focus correctly. |
-| Character key shortcuts (2.1.4) | Single-character shortcuts are remappable or disableable. |
-| Timing (2.2.1, 2.2.2) | Time limits are adjustable. Auto-updating content can be paused. |
-| Flashing (2.3.1) | No content flashes more than three times per second. |
-| Bypass blocks (2.4.1) | Skip links or landmark navigation present. |
-| Page titled (2.4.2) | Every page has a unique, descriptive title. |
-| Focus order (2.4.3) | Tab order is logical and follows visual reading sequence. |
-| Link purpose (2.4.4) | Link text is descriptive. No "click here" or "read more" without context. |
-| Multiple ways (2.4.5) | Pages findable via multiple mechanisms (search, nav, sitemap). |
-| Headings and labels (2.4.6) | Headings and form labels are descriptive. |
-| Focus visible (2.4.7) | Focus indicator is always visible. |
-| Focus not obscured (2.4.11) | Focused element is not hidden by sticky headers, modals, or overlays. **New in WCAG 2.2.** |
-| Dragging movements (2.5.7) | Drag operations have single-pointer alternatives. **New in WCAG 2.2.** |
-| Target size (2.5.8) | Interactive targets are at least 24×24 CSS pixels. **New in WCAG 2.2.** |
+| Keyboard (2.1.1) | Verify keyboard operability complies with `standards/accessibility.md` §3.1 (Keyboard Accessible). Tab through all interactive elements and confirm every function is operable via keyboard. |
+| No keyboard trap (2.1.2) | Verify focus behaviour complies with `standards/accessibility.md` §3.1 (Keyboard Accessible). Check that focus is never trapped and modals manage focus correctly. |
+| Character key shortcuts (2.1.4) | Verify shortcut behaviour complies with `standards/accessibility.md` §3.1 (Keyboard Accessible). Check that single-character shortcuts are remappable or disableable. |
+| Timing (2.2.1, 2.2.2) | Verify time limit handling complies with `standards/accessibility.md` §3.2 (Enough Time). Check that time limits are adjustable and auto-updating content can be paused. |
+| Flashing (2.3.1) | Verify flash behaviour complies with `standards/accessibility.md` §3.3 (Seizures and Physical Reactions). Check for content that flashes more than three times per second. |
+| Bypass blocks (2.4.1) | Verify bypass mechanisms comply with `standards/accessibility.md` §3.4 (Navigable). Check for skip links, landmark navigation, or heading-based navigation. |
+| Page titled (2.4.2) | Verify page titles comply with `standards/accessibility.md` §3.4 (Navigable). Check that every page has a unique, descriptive `<title>`. |
+| Focus order (2.4.3) | Verify focus order complies with `standards/accessibility.md` §3.4 (Navigable). Tab through the page and confirm the order follows the visual reading sequence. |
+| Link purpose (2.4.4) | Verify link text complies with `standards/accessibility.md` §3.4 (Navigable). Check for vague link text ("click here", "read more") without programmatic context. |
+| Multiple ways (2.4.5) | Verify page findability complies with `standards/accessibility.md` §3.4 (Navigable). Check that pages are reachable via multiple mechanisms (search, navigation, sitemap). |
+| Headings and labels (2.4.6) | Verify heading and label quality complies with `standards/accessibility.md` §3.4 (Navigable). Check that headings and form labels describe their topic or purpose. |
+| Focus visible (2.4.7) | Verify focus indicator visibility complies with `standards/accessibility.md` §3.4 (Navigable). Check that the focus indicator is always visible on every keyboard-operable element. |
+| Focus not obscured (2.4.11) | Verify focus visibility complies with `standards/accessibility.md` §3.4 (Navigable). Check that focused elements are not hidden by sticky headers, modals, or overlays. **New in WCAG 2.2.** |
+| Dragging movements (2.5.7) | Verify drag alternatives comply with `standards/accessibility.md` §3.5 (Input Modalities). Check that drag operations have single-pointer alternatives. **New in WCAG 2.2.** |
+| Target size (2.5.8) | Verify target sizes comply with `standards/accessibility.md` §3.5 (Input Modalities) and §9 (Responsive & Adaptive Design — Touch Targets). Measure interactive targets against the specified minimum dimensions. **New in WCAG 2.2.** |
 
 ### 2.3 Understandable (WCAG Principle 3)
 
 | Aspect | What to evaluate |
 |---|---|
-| Language of page (3.1.1) | `lang` attribute set on the root element. |
-| Language of parts (3.1.2) | Content in different languages has correct `lang` attributes. |
-| On focus (3.2.1) | No unexpected context change on focus. |
-| On input (3.2.2) | No unexpected context change on input. |
-| Consistent navigation (3.2.3) | Repeated navigation in same relative order. |
-| Consistent identification (3.2.4) | Same-function components identified consistently. |
-| Consistent help (3.2.6) | Help mechanisms in the same location across pages. **New in WCAG 2.2.** |
-| Error identification (3.3.1) | Errors identified in text and described. |
-| Labels or instructions (3.3.2) | All inputs have labels or instructions. |
-| Error suggestion (3.3.3) | Correction suggestions provided when known. |
-| Error prevention (3.3.4) | Legal/financial/data submissions reversible, verifiable, or confirmable. |
-| Redundant entry (3.3.7) | Users not asked to re-enter information already provided. **New in WCAG 2.2.** |
-| Accessible authentication (3.3.8) | Authentication does not require cognitive function tests without alternatives. Password paste enabled. **New in WCAG 2.2.** |
+| Language of page (3.1.1) | Verify language declaration complies with `standards/accessibility.md` §4.1 (Readable). Check for a valid `lang` attribute on the root element. |
+| Language of parts (3.1.2) | Verify inline language changes comply with `standards/accessibility.md` §4.1 (Readable). Check that content in different languages has correct `lang` attributes on containing elements. |
+| On focus (3.2.1) | Verify focus behaviour complies with `standards/accessibility.md` §4.2 (Predictable). Check for unexpected context changes when elements receive focus. |
+| On input (3.2.2) | Verify input behaviour complies with `standards/accessibility.md` §4.2 (Predictable). Check for unexpected context changes when form controls are changed. |
+| Consistent navigation (3.2.3) | Verify navigation consistency complies with `standards/accessibility.md` §4.2 (Predictable). Check that repeated navigation appears in the same relative order across pages. |
+| Consistent identification (3.2.4) | Verify component identification complies with `standards/accessibility.md` §4.2 (Predictable). Check that same-function components are identified consistently. |
+| Consistent help (3.2.6) | Verify help mechanism placement complies with `standards/accessibility.md` §4.2 (Predictable). Check that help mechanisms appear in the same location across pages. **New in WCAG 2.2.** |
+| Error identification (3.3.1) | Verify error identification complies with `standards/accessibility.md` §4.3 (Input Assistance) and §7 (Forms & Interactive Components — Error Handling). Check that errors are identified in text and described to the user. |
+| Labels or instructions (3.3.2) | Verify label provision complies with `standards/accessibility.md` §4.3 (Input Assistance) and §7 (Forms & Interactive Components — Labels and Instructions). Check that all inputs have labels or instructions. |
+| Error suggestion (3.3.3) | Verify error suggestions comply with `standards/accessibility.md` §4.3 (Input Assistance) and §7 (Forms & Interactive Components — Error Handling). Check that correction suggestions are provided when known. |
+| Error prevention (3.3.4) | Verify error prevention complies with `standards/accessibility.md` §4.3 (Input Assistance). Check that legal/financial/data submissions are reversible, verifiable, or confirmable. |
+| Redundant entry (3.3.7) | Verify redundant entry handling complies with `standards/accessibility.md` §4.3 (Input Assistance). Check that users are not asked to re-enter information already provided in the same process. **New in WCAG 2.2.** |
+| Accessible authentication (3.3.8) | Verify authentication flows comply with `standards/accessibility.md` §4.3 (Input Assistance) and §7 (Forms & Interactive Components — Accessible Authentication). Check that authentication does not require cognitive function tests without alternatives, and that password paste is enabled. **New in WCAG 2.2.** |
 
 ### 2.4 Robust (WCAG Principle 4)
 
 | Aspect | What to evaluate |
 |---|---|
-| Name, role, value (4.1.2) | All UI components expose correct name, role, and value to assistive technology. |
-| Status messages (4.1.3) | Status updates conveyed via ARIA live regions without focus movement. |
+| Name, role, value (4.1.2) | Verify UI component exposure complies with `standards/accessibility.md` §5.1 (Compatible). Check that all components expose correct name, role, and value to assistive technology. |
+| Status messages (4.1.3) | Verify status message implementation complies with `standards/accessibility.md` §5.1 (Compatible). Check that status updates use ARIA live regions and do not require focus movement. |
 
 ### 2.5 Semantic HTML & ARIA
 
 | Aspect | What to evaluate |
 |---|---|
-| Native HTML first | Semantic HTML elements used before ARIA. No `<div>` buttons or `<span>` links. |
-| Landmarks | Page regions use correct landmark elements. Multiple instances labelled uniquely. |
-| Heading hierarchy | Headings form a logical hierarchy with no skipped levels. Exactly one `<h1>` per page. |
-| ARIA correctness | All `aria-labelledby` / `aria-describedby` reference existing IDs. Roles match behaviour. Required children present. No `aria-hidden` on focusable elements. |
-| Accessible names | Every interactive element has a programmatically determinable accessible name. |
+| Native HTML first | Verify semantic HTML usage complies with `standards/accessibility.md` §6 (Semantic HTML & ARIA — First Rule of ARIA). Check for `<div>` buttons, `<span>` links, and other elements where native HTML should be used. |
+| Landmarks | Verify landmark usage complies with `standards/accessibility.md` §6 (Semantic HTML & ARIA — Landmarks). Check that page regions use correct landmark elements and multiple instances are labelled uniquely. |
+| Heading hierarchy | Verify heading structure complies with `standards/accessibility.md` §6 (Semantic HTML & ARIA — Heading Hierarchy). Check for skipped levels, missing `<h1>`, and headings used for styling rather than structure. |
+| ARIA correctness | Verify ARIA usage complies with `standards/accessibility.md` §6 (Semantic HTML & ARIA — ARIA Correctness). Check for dangling `aria-labelledby`/`aria-describedby` references, role-behaviour mismatches, missing required children, and `aria-hidden` on focusable elements. |
+| Accessible names | Verify accessible name provision complies with `standards/accessibility.md` §6 (Semantic HTML & ARIA — Accessible Names). Check that every interactive element has a programmatically determinable accessible name describing its purpose. |
 
 ### 2.6 Forms & Interactive Components
 
 | Aspect | What to evaluate |
 |---|---|
-| Labels | Every input has a programmatically associated label. Placeholder is not used as label. |
-| Required fields | Required state indicated visually and programmatically. |
-| Error association | Error messages linked to inputs via `aria-describedby` or `aria-errormessage`. |
-| Error summary | Form errors summarised with links to invalid fields. Focus moved to first error or summary. |
-| Autocomplete | Personal data fields use appropriate `autocomplete` values. |
-| Password fields | Paste is allowed. Password managers are supported. |
-| Custom widgets | Correct ARIA roles, states, keyboard patterns. Focus management is correct. |
+| Labels | Verify label implementation complies with `standards/accessibility.md` §7 (Forms & Interactive Components — Labels and Instructions). Check for programmatic label association and placeholder misuse as label substitute. |
+| Required fields | Verify required field indication complies with `standards/accessibility.md` §7 (Forms & Interactive Components — Labels and Instructions). Check that required state is indicated both visually and programmatically. |
+| Error association | Verify error association complies with `standards/accessibility.md` §7 (Forms & Interactive Components — Error Handling). Check that error messages are linked to inputs via `aria-describedby` or `aria-errormessage`. |
+| Error summary | Verify error summary behaviour complies with `standards/accessibility.md` §7 (Forms & Interactive Components — Error Handling). Check that form errors are summarised with links to invalid fields and focus is moved appropriately. |
+| Autocomplete | Verify autocomplete usage complies with `standards/accessibility.md` §7 (Forms & Interactive Components — Autocomplete). Check personal data fields against the specified `autocomplete` values table. |
+| Password fields | Verify password field behaviour complies with `standards/accessibility.md` §7 (Forms & Interactive Components — Accessible Authentication). Check that paste is allowed and password managers are supported. |
+| Custom widgets | Verify custom widget implementation complies with `standards/accessibility.md` §7 (Forms & Interactive Components — Custom Interactive Components). Check for correct ARIA roles, states, keyboard patterns, and focus management. |
 
 ### 2.7 Media & Time-based Content
 
 | Aspect | What to evaluate |
 |---|---|
-| Video captions | Pre-recorded video has accurate, synchronised captions. |
-| Live captions | Live video has real-time captions. |
-| Audio descriptions | Visual-only information described in audio. |
-| Transcripts | Audio-only content has text transcripts. |
-| Auto-play | Media does not auto-play, or provides immediate pause/mute control. |
-| Player controls | Media player controls are keyboard accessible and labelled. |
+| Video captions | Verify caption provision complies with `standards/accessibility.md` §8 (Media & Time-based Content — Captions). Check that pre-recorded video has accurate, synchronised captions. |
+| Live captions | Verify live caption provision complies with `standards/accessibility.md` §8 (Media & Time-based Content — Captions). Check that live video has real-time captions. |
+| Audio descriptions | Verify audio description provision complies with `standards/accessibility.md` §8 (Media & Time-based Content — Audio Descriptions). Check that visual-only information is described in audio. |
+| Transcripts | Verify transcript provision complies with `standards/accessibility.md` §8 (Media & Time-based Content — Transcripts). Check that audio-only content has text transcripts. |
+| Auto-play | Verify auto-play behaviour complies with `standards/accessibility.md` §8 (Media & Time-based Content — Media Playback). Check that media does not auto-play, or provides immediate pause/mute control. |
+| Player controls | Verify media player controls comply with `standards/accessibility.md` §8 (Media & Time-based Content — Media Playback). Check that controls are keyboard accessible and labelled. |
 
 ### 2.8 Responsive & Adaptive Design
 
 | Aspect | What to evaluate |
 |---|---|
-| Reflow | Content usable at 320px width without horizontal scrolling. |
-| Orientation | No orientation lock unless essential. |
-| Text spacing | Content tolerates overridden line height, paragraph spacing, letter spacing, word spacing. |
-| Zoom | Content functional at 200% browser zoom. |
-| Touch targets | Interactive elements at least 24×24 CSS pixels with adequate spacing. |
+| Reflow | Verify reflow behaviour complies with `standards/accessibility.md` §9 (Responsive & Adaptive Design — Reflow). Test at the specified viewport widths and check for horizontal scrolling. |
+| Orientation | Verify orientation handling complies with `standards/accessibility.md` §9 (Responsive & Adaptive Design — Orientation). Check for orientation lock without essential justification. |
+| Text spacing | Verify text spacing tolerance complies with `standards/accessibility.md` §9 (Responsive & Adaptive Design — Text Spacing). Apply the specified override values and check for content breakage. |
+| Zoom | Verify zoom behaviour complies with `standards/accessibility.md` §9 (Responsive & Adaptive Design — Zoom). Test all content and functionality at 200% browser zoom. |
+| Touch targets | Verify target sizes comply with `standards/accessibility.md` §9 (Responsive & Adaptive Design — Touch Targets). Measure interactive elements against the specified minimum dimensions and spacing requirements. |
 
 ---
 

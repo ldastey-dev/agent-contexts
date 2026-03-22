@@ -45,75 +45,75 @@ Evaluate the application against each criterion below. Assess each area independ
 
 | Aspect | What to evaluate |
 |---|---|
-| Log format | Are logs structured (JSON or equivalent) or unstructured (plain text)? Structured logs are required for effective querying and alerting. |
-| Log levels | Are log levels used correctly and consistently? DEBUG for diagnostics, INFO for significant events, WARN for concerning conditions, ERROR for failures. No logging everything at INFO. |
-| Correlation IDs | Can a single request be traced through all log entries it generates? Is a correlation/request ID propagated and included in every log line? |
-| Contextual enrichment | Do log entries include relevant context: user ID, tenant ID, operation name, resource identifiers? Or are they bare messages requiring guesswork? |
-| PII redaction | Is personally identifiable information redacted from logs? Are there log entries that contain passwords, tokens, email addresses, or other sensitive data? |
-| Error logging | Are exceptions logged with full stack traces and context? Or are they swallowed, logged without context, or logged at the wrong level? |
-| Log volume management | Are logs appropriately verbose? Too verbose (logging every request body in production) or too quiet (no logs for critical operations)? Is there a cost/value balance? |
-| Consistency | Is the logging approach consistent across the codebase, or does each module/service log differently? |
+| Log format | Verify log format complies with `standards/observability.md` §1 (Structured Logging). Check whether logs are structured JSON or unstructured plain text. |
+| Log levels | Verify log level usage complies with `standards/observability.md` §1 (Structured Logging — Rules). Check that severity levels are used correctly and consistently (DEBUG for diagnostics, INFO for significant events, WARN for concerning conditions, ERROR for failures). |
+| Correlation IDs | Verify correlation complies with `standards/observability.md` §1 (Structured Logging) and Correlation section. Check that every log line includes `trace_id` and `span_id`, enabling a single request to be traced through all its log entries. |
+| Contextual enrichment | Verify log attributes comply with the required attributes table in `standards/observability.md` §1 (Structured Logging). Check that log entries include the specified contextual fields (`operation.name`, `operation.request_id`, `operation.duration_ms`, `operation.status`, `service.name`). |
+| PII redaction | Verify PII handling complies with `standards/observability.md` Sensitive Data Policy. Check for personally identifiable information, passwords, tokens, or email addresses in log entries. |
+| Error logging | Verify error logging complies with `standards/observability.md` §1 (Structured Logging — Rules). Check that exceptions are logged with `error.type` and `error.message` attributes, full stack traces, and appropriate context. |
+| Log volume management | Assess whether logs are appropriately verbose. Check for excessive production logging (e.g., every request body) or insufficient logging of critical operations. |
+| Consistency | Assess whether the logging approach is consistent across the codebase, following the single named logger per package pattern specified in `standards/observability.md` §1 (Structured Logging — Rules). |
 
 ### 2.2 Distributed Tracing
 
 | Aspect | What to evaluate |
 |---|---|
-| Instrumentation coverage | Are all services instrumented? Are critical code paths covered with spans? Are there gaps in the trace? |
-| Trace propagation | Do traces propagate across service boundaries (HTTP headers, message queue metadata)? Can a request be traced end-to-end? |
-| Span quality | Do spans have meaningful names, relevant attributes (user ID, order ID, query parameters), and appropriate status codes? Or are they generic and uninformative? |
-| Database span coverage | Are database queries captured as spans with query text (parameterised), duration, and row count? |
-| External call coverage | Are outbound HTTP calls, message queue operations, and cache operations captured as spans? |
-| Sampling strategy | Is sampling configured appropriately? 100% in non-production, intelligent sampling in production (always capture errors, slow requests, and a representative sample of normal traffic)? |
-| OpenTelemetry alignment | Is the application using OpenTelemetry (or moving toward it) for vendor-neutral instrumentation? Or is it locked into a proprietary SDK? |
-| Trace-log correlation | Can you jump from a trace span to the corresponding log entries and vice versa? Are trace IDs included in log entries? |
+| Instrumentation coverage | Verify tracing instrumentation complies with `standards/observability.md` §2 (Distributed Tracing). Check that all services and critical code paths are covered with spans, with no gaps in the trace. |
+| Trace propagation | Verify trace propagation complies with `standards/observability.md` Context Propagation. Check that traces propagate across service boundaries using the specified propagation methods (W3C `traceparent`/`tracestate` for HTTP, message metadata for queues). |
+| Span quality | Verify span attributes comply with the required span attributes table in `standards/observability.md` §2 (Distributed Tracing). Check that spans have meaningful names following the `{service}.{layer}/{operation}` pattern, relevant attributes, and appropriate status codes. |
+| Database span coverage | Check whether database queries are captured as spans with parameterised query text, duration, and row count. |
+| External call coverage | Check whether outbound HTTP calls, message queue operations, and cache operations are captured as spans. |
+| Sampling strategy | Verify sampling approach complies with `standards/observability.md` §2 (Distributed Tracing — Rules). Check for appropriate sampling configuration (always capture errors and slow requests plus a representative sample of normal traffic). |
+| OpenTelemetry alignment | Verify OTEL alignment complies with `standards/observability.md` §2 (Distributed Tracing). Check whether the application uses OpenTelemetry for vendor-neutral instrumentation or is locked into a proprietary SDK. |
+| Trace-log correlation | Verify trace-log correlation complies with `standards/observability.md` Correlation section. Check that trace IDs are included in log entries and that jumping between traces and corresponding logs is possible. |
 
 ### 2.3 Metrics
 
 | Aspect | What to evaluate |
 |---|---|
-| RED metrics | Are Request rate, Error rate, and Duration (latency) measured for every service endpoint? These are the minimum. |
-| USE metrics | For infrastructure resources: Utilisation, Saturation, and Errors. CPU, memory, disk, network, connection pools. |
-| Business metrics | Are business-meaningful metrics tracked? Orders per minute, sign-ups, payment success rate, feature usage. |
-| Custom application metrics | Beyond RED/USE, are application-specific metrics tracked? Queue depth, cache hit ratio, background job completion rate, circuit breaker state. |
-| Histogram vs counter | Are latency and size measurements using histograms (for percentile calculation) rather than averages? Averages hide tail latency. |
-| Metric naming | Are metrics named consistently following conventions (e.g., `http_request_duration_seconds`, not ad-hoc names)? |
-| Cardinality management | Are metric labels/tags bounded? Unbounded cardinality (e.g., user ID as a label) will overwhelm the metrics backend. |
-| Dashboard coverage | Are there dashboards for each service? Do they show the golden signals? Are they useful during incidents or just vanity dashboards? |
+| RED metrics | Verify RED metrics (Request rate, Error rate, Duration) are measured per `standards/observability.md` §3 (Metrics). Check that the required metric instruments are in place for every service endpoint. |
+| USE metrics | Check that infrastructure resource metrics (Utilisation, Saturation, Errors) are tracked for CPU, memory, disk, network, and connection pools per `standards/observability.md` §3 (Metrics — Golden Signals). |
+| Business metrics | Check whether business-meaningful metrics are tracked (orders per minute, sign-ups, payment success rate, feature usage). |
+| Custom application metrics | Verify application-specific metrics comply with the required metric instruments table in `standards/observability.md` §3 (Metrics). Check for `operation.duration`, `operation.count`, `operation.errors`, and other specified metrics. |
+| Histogram vs counter | Verify histogram usage complies with `standards/observability.md` Non-Negotiables (Histograms over averages). Check that latency and size measurements use histograms for percentile calculation rather than averages. |
+| Metric naming | Verify metric naming complies with `standards/observability.md` §3 (Metrics) and Non-Negotiables (OTEL field naming). Check for consistent naming following OTEL Semantic Convention attribute names. |
+| Cardinality management | Verify metric label usage complies with `standards/observability.md` §3 (Metrics — Rules). Check that metric labels/tags are bounded — no unbounded cardinality such as user ID as a label. |
+| Dashboard coverage | Assess whether dashboards exist for each service, show the Golden Signals, and are useful during incidents rather than vanity dashboards. |
 
 ### 2.4 Health & Readiness
 
 | Aspect | What to evaluate |
 |---|---|
-| Health endpoint existence | Does the application expose a health check endpoint? Is it unauthenticated and fast? |
-| Liveness vs readiness | Are liveness (process is alive) and readiness (can serve traffic) separated? A service starting up should be not-ready but alive. |
-| Dependency health checks | Does the health endpoint verify connectivity to critical dependencies (database, cache, message queue, downstream services)? |
-| Health check depth | Are health checks shallow (process responds) or deep (verifying actual functionality)? Both have a place -- deep checks for readiness, shallow for liveness. |
-| Startup probes | For applications with slow startup, are startup probes configured to prevent premature liveness failure? |
-| Graceful shutdown | Does the application handle SIGTERM gracefully? Does it drain in-flight requests, close connections, and shut down cleanly? |
+| Health endpoint existence | Check whether the application exposes a health check endpoint. Verify it is unauthenticated and fast. |
+| Liveness vs readiness | Check whether liveness (process is alive) and readiness (can serve traffic) are separated. A service starting up should be not-ready but alive. |
+| Dependency health checks | Check whether the health endpoint verifies connectivity to critical dependencies (database, cache, message queue, downstream services). |
+| Health check depth | Assess whether health checks are shallow (process responds) or deep (verifying actual functionality). Both have a place — deep checks for readiness, shallow for liveness. |
+| Startup probes | For applications with slow startup, check whether startup probes are configured to prevent premature liveness failure. |
+| Graceful shutdown | Check whether the application handles SIGTERM gracefully — draining in-flight requests, closing connections, and shutting down cleanly. |
 
 ### 2.5 Alerting & SLOs
 
 | Aspect | What to evaluate |
 |---|---|
-| SLI definition | Are Service Level Indicators defined for key user-facing operations? (e.g., "99% of login requests complete in < 500ms") |
-| SLO targets | Are Service Level Objectives set with explicit targets and measurement windows? |
-| Error budget | Is there an error budget concept? Is it used to balance reliability investment vs feature velocity? |
-| Alert quality | Are alerts actionable? Do they fire on symptoms (user impact) not causes (CPU is high)? Are there noisy alerts that get ignored? |
-| Alert coverage | Are there alerts for: service down, error rate spike, latency degradation, resource exhaustion, certificate expiry, dependency failure? |
-| Alert routing | Do alerts reach the right people? Is there an escalation policy? Is there a distinction between page-worthy and notification-worthy? |
-| Runbooks | Does each alert link to a runbook with diagnostic steps and remediation procedures? |
-| False positive rate | What percentage of alerts are false positives? High false positive rates erode trust and lead to alert fatigue. |
-| Missing alerts | Are there recent incidents that were detected by users rather than monitoring? This indicates alert gaps. |
+| SLI definition | Check whether Service Level Indicators are defined for key user-facing operations (e.g., "99% of login requests complete in < 500ms"). |
+| SLO targets | Check whether Service Level Objectives are set with explicit targets and measurement windows. |
+| Error budget | Check whether an error budget concept is in place and used to balance reliability investment against feature velocity. |
+| Alert quality | Assess whether alerts are actionable, fire on symptoms (user impact) not causes (CPU is high), and whether noisy alerts exist that get ignored. |
+| Alert coverage | Verify alert coverage against the conditions specified in `standards/observability.md` Alerting Thresholds. Check for alerts on: error rate spikes, latency degradation, resource exhaustion, service downtime, and dependency failure. |
+| Alert routing | Check whether alerts reach the right people with appropriate escalation policies and a distinction between page-worthy and notification-worthy. |
+| Runbooks | Check whether each alert links to a runbook with diagnostic steps and remediation procedures. |
+| False positive rate | Assess the percentage of alerts that are false positives. High false positive rates erode trust and lead to alert fatigue. |
+| Missing alerts | Check whether recent incidents were detected by users rather than monitoring — this indicates alert gaps. |
 
 ### 2.6 Incident Readiness
 
 | Aspect | What to evaluate |
 |---|---|
-| On-call rotation | Is there a defined on-call rotation? Is it sustainable (not one person always on call)? |
-| Incident process | Is there a defined incident response process? Severity levels, communication channels, roles (incident commander, scribe)? |
-| Post-incident reviews | Are blameless post-incident reviews conducted? Are action items tracked and completed? |
-| Diagnostic capability | During an incident, can the team quickly answer: What's broken? Since when? What changed? Who is affected? How many? |
-| Dependency mapping | Is there a clear understanding of service dependencies? Can the team quickly identify which downstream failures affect which user-facing functionality? |
+| On-call rotation | Check whether a defined on-call rotation exists and is sustainable (not one person always on call). |
+| Incident process | Check whether a defined incident response process exists with severity levels, communication channels, and roles (incident commander, scribe). |
+| Post-incident reviews | Check whether blameless post-incident reviews are conducted and action items are tracked and completed. |
+| Diagnostic capability | Assess whether the team can quickly answer during an incident: What is broken? Since when? What changed? Who is affected? How many? |
+| Dependency mapping | Check whether a clear understanding of service dependencies exists and the team can quickly identify which downstream failures affect which user-facing functionality. |
 
 ---
 

@@ -97,7 +97,7 @@ For each issue found:
 
 ## Standards Reference
 
-Apply the criteria defined in `standards/ci-cd.md` and `standards/operational-excellence.md`. Flag any deviation as a finding.
+Apply the criteria defined in `standards/iac.md`, `standards/ci-cd.md`, and `standards/operational-excellence.md`. Flag any deviation as a finding.
 
 ---
 

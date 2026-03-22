@@ -44,16 +44,16 @@ Evaluate the application against each criterion below. Assess each area independ
 
 | Vulnerability Class | What to evaluate |
 |---|---|
-| **A01: Broken Access Control** | Missing authorisation checks, IDOR vulnerabilities, privilege escalation paths, CORS misconfiguration, metadata manipulation, forced browsing. **Check for sequential/predictable identifiers combined with missing authorisation -- this compounds into trivial enumeration.** |
-| **A02: Cryptographic Failures** | Sensitive data in plaintext, weak algorithms, missing encryption at rest/in transit, hardcoded keys, insufficient key management, deprecated TLS versions |
-| **A03: Injection** | SQL injection, NoSQL injection, OS command injection, LDAP injection, expression language injection. Check every point where user input reaches a query, command, or interpreter. |
-| **A04: Insecure Design** | Missing threat modelling, insecure business logic, missing rate limiting on sensitive operations, lack of defence in depth. **Look for design-level flaws, not just implementation bugs.** |
-| **A05: Security Misconfiguration** | Default credentials, unnecessary features enabled, overly permissive error handling, missing security headers, directory listing, stack traces in responses |
-| **A06: Vulnerable and Outdated Components** | Known CVEs in dependencies, outdated frameworks, unmaintained libraries, missing lock file integrity checks |
-| **A07: Identification and Authentication Failures** | Weak password policies, missing MFA, credential stuffing vulnerability, session fixation, token lifetime issues, insecure password recovery |
-| **A08: Software and Data Integrity Failures** | Insecure deserialisation, unsigned updates, CI/CD pipeline integrity, dependency confusion risk, missing subresource integrity |
-| **A09: Security Logging and Monitoring Failures** | Insufficient audit logging, missing intrusion detection, no alerting on suspicious activity, logs that omit security-relevant events, log injection vulnerabilities |
-| **A10: Server-Side Request Forgery (SSRF)** | Unvalidated URLs in server-side requests, internal service exposure, cloud metadata endpoint access |
+| **A01: Broken Access Control** | Verify access control implementation complies with `standards/security.md` A01 (Broken Access Control). Check for missing authorisation checks, IDOR vulnerabilities, privilege escalation paths, CORS misconfiguration, metadata manipulation, and forced browsing. **Check for sequential/predictable identifiers combined with missing authorisation -- this compounds into trivial enumeration.** |
+| **A02: Cryptographic Failures** | Verify cryptographic practices comply with `standards/security.md` A02 (Cryptographic Failures). Check for sensitive data in plaintext, weak algorithms, missing encryption at rest/in transit, hardcoded keys, insufficient key management, and deprecated TLS versions. |
+| **A03: Injection** | Verify input handling complies with `standards/security.md` A03 (Injection). Check every point where user input reaches a query, command, or interpreter for SQL injection, NoSQL injection, OS command injection, LDAP injection, and expression language injection. |
+| **A04: Insecure Design** | Verify design-level security complies with `standards/security.md` A04 (Insecure Design). **Look for design-level flaws, not just implementation bugs.** Check for missing threat modelling, insecure business logic, missing rate limiting on sensitive operations, and lack of defence in depth. |
+| **A05: Security Misconfiguration** | Verify configuration complies with `standards/security.md` A05 (Security Misconfiguration). Check for default credentials, unnecessary features enabled, overly permissive error handling, missing security headers, directory listing, and stack traces in responses. |
+| **A06: Vulnerable and Outdated Components** | Verify dependency management complies with `standards/security.md` A06 (Vulnerable & Outdated Components). Scan for known CVEs, outdated frameworks, unmaintained libraries, and missing lock file integrity checks. |
+| **A07: Identification and Authentication Failures** | Verify authentication practices comply with `standards/security.md` A07 (Identification & Authentication Failures). Check for weak password policies, missing MFA, credential stuffing vulnerability, session fixation, token lifetime issues, and insecure password recovery. |
+| **A08: Software and Data Integrity Failures** | Verify integrity controls comply with `standards/security.md` A08 (Software & Data Integrity Failures). Check for insecure deserialisation, unsigned updates, CI/CD pipeline integrity, dependency confusion risk, and missing subresource integrity. |
+| **A09: Security Logging and Monitoring Failures** | Verify security logging complies with `standards/security.md` A09 (Security Logging & Monitoring Failures). Check for insufficient audit logging, missing intrusion detection, absent alerting on suspicious activity, logs that omit security-relevant events, and log injection vulnerabilities. |
+| **A10: Server-Side Request Forgery (SSRF)** | Verify SSRF protections comply with `standards/security.md` A10 (Server-Side Request Forgery). Check for unvalidated URLs in server-side requests, internal service exposure, and cloud metadata endpoint access. |
 
 ### 2.2 Compound & Chained Attack Vectors
 
@@ -77,51 +77,51 @@ This is the most critical section. Individual vulnerabilities rarely exist in is
 
 | Aspect | What to evaluate |
 |---|---|
-| Input validation | Allowlist vs denylist, validation at trust boundaries, type coercion safety, length limits |
-| Output encoding | Context-appropriate encoding (HTML, URL, JavaScript, SQL), template engine auto-escaping |
-| Error handling | Errors don't leak internals, generic messages to users, detailed logging server-side, no catch-and-swallow |
-| Defence in depth | Multiple layers of validation, not relying on a single control, server-side enforcement regardless of client-side checks |
+| Input validation | Verify input validation complies with `standards/security.md` A03 (Injection) and Additional Secure Coding Rules — Input Validation Pattern. Check for allowlist vs denylist approach, validation at trust boundaries, type coercion safety, and length limits. |
+| Output encoding | Verify output encoding complies with `standards/security.md` A03 (Injection). Check for context-appropriate encoding (HTML, URL, JavaScript, SQL) and template engine auto-escaping configuration. |
+| Error handling | Verify error handling complies with `standards/security.md` A05 (Security Misconfiguration) and Additional Secure Coding Rules — Exception Handling. Check that errors do not leak internals, generic messages are returned to users, detailed logging is server-side only, and no catch-and-swallow patterns exist. |
+| Defence in depth | Verify layered security complies with `standards/security.md` Security Path Analysis. Check for multiple layers of validation, avoidance of single-control reliance, and server-side enforcement regardless of client-side checks. |
 
 ### 2.4 Secrets Management
 
 | Aspect | What to evaluate |
 |---|---|
-| Hardcoded secrets | Secrets in source code, config files committed to repo, environment files in version control |
-| Secret storage | Vault integration, encrypted secret stores, secret injection at runtime |
-| Secret rotation | Rotation capability, rotation frequency, automated rotation |
-| Secret scope | Principle of least privilege for secrets, per-environment secrets, no shared secrets across services |
-| Git history | Secrets that were committed and "removed" but persist in git history |
+| Hardcoded secrets | Verify secret handling complies with `standards/security.md` Additional Secure Coding Rules — Secrets Management and Non-Negotiables (rule 1). Check for secrets in source code, config files committed to repo, and environment files in version control. |
+| Secret storage | Check for vault integration, encrypted secret stores, and secret injection at runtime as specified in `standards/security.md` A02 (Cryptographic Failures). |
+| Secret rotation | Assess rotation capability, frequency, and whether automated rotation is in place. |
+| Secret scope | Verify secret scoping follows the principle of least privilege. Check for per-environment secrets and shared secrets across services. |
+| Git history | Check for secrets that were committed and "removed" but persist in git history. |
 
 ### 2.5 Dependency Supply Chain
 
 | Aspect | What to evaluate |
 |---|---|
-| Known CVEs | Scan all dependencies for known vulnerabilities. Note severity and exploitability. |
-| Outdated packages | Packages behind latest minor/major versions, especially security-relevant ones |
-| Lock file integrity | Lock files present and committed, hash verification, no floating versions for critical deps |
-| Dependency scope | Over-broad dependencies, unnecessary transitive dependencies, dependency confusion risk |
-| SBOM readiness | Can a Software Bill of Materials be generated? Is the dependency tree auditable? |
+| Known CVEs | Verify dependency scanning complies with `standards/security.md` A06 (Vulnerable & Outdated Components). Scan all dependencies for known vulnerabilities, noting severity and exploitability. |
+| Outdated packages | Check for packages behind latest minor/major versions, especially security-relevant ones, per the cadence table in `standards/security.md` A06. |
+| Lock file integrity | Verify lock file practices comply with `standards/security.md` A05 (Security Misconfiguration) and Non-Negotiables (rule 7). Check that lock files are present, committed, and hash-verified. |
+| Dependency scope | Check for over-broad dependencies, unnecessary transitive dependencies, and dependency confusion risk. |
+| SBOM readiness | Assess whether a Software Bill of Materials can be generated and the dependency tree is auditable. |
 
 ### 2.6 Data Handling & Privacy
 
 | Aspect | What to evaluate |
 |---|---|
-| PII identification | What PII is collected, where it's stored, who can access it, is it inventoried? |
-| Encryption at rest | Database encryption, file storage encryption, backup encryption |
-| Encryption in transit | TLS everywhere, certificate management, internal service communication encryption |
-| Data retention | Retention policies defined, automated purging, right to deletion capability |
-| Data minimisation | Only collecting what's necessary, not logging sensitive data, masking in non-production environments |
-| Regulatory compliance | GDPR consent and erasure, PCI-DSS scope minimisation, jurisdiction-specific requirements |
+| PII identification | Identify what PII is collected, where it is stored, who can access it, and whether it is inventoried. |
+| Encryption at rest | Verify encryption at rest complies with `standards/security.md` A02 (Cryptographic Failures). Check database encryption, file storage encryption, and backup encryption. |
+| Encryption in transit | Verify encryption in transit complies with `standards/security.md` A02 (Cryptographic Failures) and Non-Negotiables (rule 5). Check for TLS everywhere, certificate management, and internal service communication encryption. |
+| Data retention | Check whether retention policies are defined, automated purging is in place, and right-to-deletion capability exists. |
+| Data minimisation | Check for collection of unnecessary data, logging of sensitive data, and masking in non-production environments. |
+| Regulatory compliance | Assess compliance with applicable regulations (GDPR consent and erasure, PCI-DSS scope minimisation, jurisdiction-specific requirements). |
 
 ### 2.7 Access Control Deep Dive
 
 | Aspect | What to evaluate |
 |---|---|
-| Authentication strength | MFA availability, password policies, account lockout, brute-force protection |
-| Authorisation granularity | Resource-level permissions, field-level access control, horizontal privilege separation |
-| API security | API key management, token scoping, OAuth scope enforcement, service-to-service authentication |
-| Session management | Session lifetime, secure cookie flags (HttpOnly, Secure, SameSite), session invalidation on privilege change |
-| Principle of least privilege | Default deny, minimal permission grants, regular access reviews |
+| Authentication strength | Verify authentication strength complies with `standards/security.md` A07 (Identification & Authentication Failures). Check MFA availability, password policies, account lockout, and brute-force protection. |
+| Authorisation granularity | Verify authorisation complies with `standards/security.md` A01 (Broken Access Control). Check resource-level permissions, field-level access control, and horizontal privilege separation. |
+| API security | Check API key management, token scoping, OAuth scope enforcement, and service-to-service authentication. |
+| Session management | Verify session management complies with `standards/security.md` A07 (Identification & Authentication Failures). Check session lifetime, secure cookie flags (HttpOnly, Secure, SameSite), and session invalidation on privilege change. |
+| Principle of least privilege | Verify least privilege implementation complies with `standards/security.md` A04 (Insecure Design). Check for default deny, minimal permission grants, and regular access reviews. |
 
 ---
 

@@ -45,97 +45,97 @@ Evaluate the application against each criterion below. Assess each area independ
 
 | Aspect | What to evaluate |
 |---|---|
-| Coverage | Is a circuit breaker implemented on every outbound dependency that can fail transiently (HTTP services, databases, message brokers, third-party APIs)? |
-| State machine correctness | Does the circuit breaker implement all three states (closed, open, half-open) with correct transitions? |
-| Failure threshold | Does the circuit open after 5 consecutive failures or when the failure rate exceeds 50% within a 60-second sliding window (whichever is reached first)? |
-| Open duration | Is the circuit held open for 30 seconds before transitioning to half-open? Is progressive backoff applied (30s, 60s, 120s, capped at 5 minutes)? |
-| Half-open probe limit | Are 1-3 probe requests allowed in half-open state? Does any probe failure immediately re-open the circuit? |
-| Per-dependency isolation | Does each external dependency have its own circuit breaker instance? Are unrelated dependencies ever sharing a single breaker? |
-| State monitoring | Is circuit breaker state exposed as a metric and included in health check responses? Is every state transition logged at WARN? |
-| Runtime configurability | Are circuit breaker thresholds configurable at runtime (feature flags or configuration), not hardcoded? |
+| Coverage | Verify circuit breaker coverage against `standards/resilience.md` §1 (Rules). Check whether every outbound dependency that can fail transiently is protected by a circuit breaker. |
+| State machine correctness | Verify the circuit breaker implements all three states per `standards/resilience.md` §1 (States table). Check for correct closed, open, and half-open transitions. |
+| Failure threshold | Verify failure thresholds comply with `standards/resilience.md` §1 (Rules — Failure threshold). Check whether the configured thresholds match the specified consecutive-failure and sliding-window criteria. |
+| Open duration | Verify open duration and progressive backoff comply with `standards/resilience.md` §1 (Rules — Open duration). Check the initial hold duration and the backoff progression cap. |
+| Half-open probe limit | Verify half-open behaviour complies with `standards/resilience.md` §1 (Rules — Half-open probe limit). Check the number of probe requests allowed and the re-open-on-failure behaviour. |
+| Per-dependency isolation | Verify isolation complies with `standards/resilience.md` §1 (Rules — Per-dependency isolation). Check whether each external dependency has its own circuit breaker instance. |
+| State monitoring | Verify monitoring complies with `standards/resilience.md` §1 (Rules — State monitoring). Check whether circuit breaker state is exposed as a metric, included in health check responses, and state transitions are logged. |
+| Runtime configurability | Verify thresholds are configurable at runtime per `standards/resilience.md` §1 (Rules). Check for hardcoded thresholds in application code. |
 
 ### 2.2 Retry Policies
 
 | Aspect | What to evaluate |
 |---|---|
-| Backoff strategy | Is exponential backoff with jitter used (`base_delay * 2^attempt + random_jitter`)? Are fixed-interval or immediate retries present (thundering herd risk)? |
-| Maximum attempts | Is the retry limit 3 attempts (including the original request)? Are there retry policies exceeding this? |
-| Retryable classification | Are only transient errors retried (500, 502, 503, 504, 429, connection refused, timeouts)? |
-| Non-retryable enforcement | Are authentication errors (401/403), validation errors (4xx), and not-found errors (404) explicitly excluded from retries? |
-| Retry-After respect | When a 429 or 503 includes a `Retry-After` header, is that value used as the minimum delay? |
-| Total duration bound | Is the sum of all retry delays bounded by the caller's timeout? Does the policy fail immediately when the remaining timeout budget is insufficient? |
-| Circuit breaker integration | Do retries pass through the circuit breaker? If the circuit opens during retry attempts, do retries stop? |
-| Retry logging | Is every retry attempt logged at WARN with: attempt number, max attempts, delay, error type, and dependency name? |
+| Backoff strategy | Verify the backoff formula complies with `standards/resilience.md` §2 (Retry Formula). Check for fixed-interval or immediate retries that create thundering herd risk. |
+| Maximum attempts | Verify retry limits comply with `standards/resilience.md` §2 (Retry Formula table — max_attempts). Check for any policies exceeding the specified maximum. |
+| Retryable classification | Verify retryable error classification against `standards/resilience.md` §2 (Retryable vs Non-Retryable Errors table). Check that only transient errors are retried. |
+| Non-retryable enforcement | Verify non-retryable errors are excluded per `standards/resilience.md` §2 (Rules). Check that authentication, validation, and not-found errors are never retried. |
+| Retry-After respect | Verify `Retry-After` header handling complies with `standards/resilience.md` §2 (Rules — Always respect Retry-After headers). Check that the header value is used as the minimum delay. |
+| Total duration bound | Verify total retry duration is bounded per `standards/resilience.md` §2 (Rules — Bound total retry duration). Check whether the policy fails immediately when the remaining timeout budget is insufficient. |
+| Circuit breaker integration | Verify retry-circuit breaker integration per `standards/resilience.md` §2 (Rules). Check whether retries stop when the circuit opens during retry attempts. |
+| Retry logging | Verify retry logging complies with `standards/resilience.md` §2 (Rules — Log every retry attempt). Check that attempt number, max attempts, delay, error type, and dependency name are logged. |
 
 ### 2.3 Timeout Handling
 
 | Aspect | What to evaluate |
 |---|---|
-| Explicit timeouts | Does every external call (HTTP, database, message queue, DNS, TLS, gRPC) have an explicit, finite timeout? Are any calls relying on library or OS defaults? |
-| Timeout values | Are timeout values appropriate: HTTP 5s default / 30s max, database query 5s / 30s, connection acquisition 2s / 5s, message queue publish 3s / 10s? |
-| Timeout hierarchy | Is the inner timeout strictly less than the outer timeout? Does a downstream call timeout leave room for response serialisation and network transit? |
-| No infinite waits | Are `timeout=0` or `timeout=None` (infinite wait) patterns present anywhere in network or I/O calls? |
-| Connect vs read timeouts | Are connect timeout and read timeout set separately? Typical pattern: connect 2s, read 5s. |
-| Deadline propagation | When a request enters with a deadline, is the remaining budget propagated downstream rather than starting fresh timeouts at each hop? |
-| Timeout logging | Are all timeout occurrences logged at WARN with dependency name, timeout value, and operation attempted? |
+| Explicit timeouts | Verify every external call has an explicit timeout per `standards/resilience.md` §3 (Rules). Check for any calls relying on library or OS defaults. |
+| Timeout values | Verify timeout values against `standards/resilience.md` §3 (Required Timeouts table). Check each call type against the specified defaults and hard maximums. |
+| Timeout hierarchy | Verify the timeout hierarchy complies with `standards/resilience.md` §3 (Rules — Timeout hierarchy). Check that inner timeouts are strictly less than outer timeouts with room for serialisation and transit. |
+| No infinite waits | Check for `timeout=0` or `timeout=None` patterns prohibited by `standards/resilience.md` §3 (Rules). Scan all network and I/O calls for infinite-wait configurations. |
+| Connect vs read timeouts | Verify connect and read timeouts are set separately per `standards/resilience.md` §3 (Rules — Connect timeout ≠ read timeout). |
+| Deadline propagation | Verify deadline propagation complies with `standards/resilience.md` §3 (Rules — Propagate deadline context). Check whether remaining budget is passed downstream rather than starting fresh timeouts at each hop. |
+| Timeout logging | Verify timeout logging complies with `standards/resilience.md` §3 (Rules). Check that dependency name, timeout value, and operation are logged at WARN. |
 
 ### 2.4 Bulkhead Isolation
 
 | Aspect | What to evaluate |
 |---|---|
-| Pool separation | Are critical and non-critical paths using separate thread pools or connection pools? Can a slow non-critical operation starve the critical path? |
-| Per-dependency concurrency | Does each external dependency have a maximum number of concurrent in-flight requests (semaphore or bounded pool)? When the limit is reached, does it fail fast? |
-| Failure domain isolation | Are dependencies that share the same failure mode (e.g., same database cluster) sharing a bulkhead? Are independently-failing dependencies given separate bulkheads? |
-| Pool sizing | Are connection pools sized appropriately: HTTP 5-50 per host, database 5-20 (coordinated across replicas), non-critical worker pools 2-10? |
-| Pool monitoring | Are metrics emitted for active connections, idle connections, and wait queue depth? Is there an alert when utilisation exceeds 80%? |
-| Fair share enforcement | Can a single tenant, endpoint, or feature consume more than its fair share of pooled resources? Are per-tenant or per-endpoint concurrency limits in place? |
+| Pool separation | Verify pool separation complies with `standards/resilience.md` §4 (Rules). Check whether critical and non-critical paths use separate thread pools or connection pools. |
+| Per-dependency concurrency | Verify per-dependency concurrency limits comply with `standards/resilience.md` §4 (Rules — Limit concurrency per dependency). Check whether each external dependency has a bounded maximum of concurrent in-flight requests. |
+| Failure domain isolation | Verify failure domain isolation complies with `standards/resilience.md` §4 (Rules — Isolate by failure domain). Check whether dependencies sharing the same failure mode share a bulkhead and independently-failing dependencies have separate bulkheads. |
+| Pool sizing | Verify pool sizes against `standards/resilience.md` §4 (Resource pool sizing table). Check HTTP, database, and worker pool sizes against the specified ranges. |
+| Pool monitoring | Verify pool monitoring complies with `standards/resilience.md` §4 (Rules — Monitor pool utilisation). Check whether active connections, idle connections, and wait queue depth are emitted as metrics with appropriate alerting thresholds. |
+| Fair share enforcement | Verify fair share enforcement complies with `standards/resilience.md` §4 (Rules). Check whether a single tenant, endpoint, or feature can consume more than its fair share of pooled resources. |
 
 ### 2.5 Graceful Degradation
 
 | Aspect | What to evaluate |
 |---|---|
-| Degradation strategies | For each non-critical dependency, is a degradation strategy defined: serve cached/stale data, disable feature, return partial results, use defaults, or queue for later? |
-| Degradation indicators | Does every degraded response include an explicit indicator (`X-Degraded` header, `"degraded": true` field, or equivalent)? Is the caller ever silently served stale or partial data? |
-| Cache TTL for degradation | Are stale cache entries served for up to 5 minutes past expiry during outages? Is service beyond 5 minutes prevented? Is every stale serve logged at WARN? |
-| Degradation hierarchy | Is there a documented hierarchy of which features are critical (never degraded) vs non-critical (can be disabled)? Is it in the operational runbook? |
-| Security in degradation | Do degraded responses still pass through authentication and authorisation? Are security checks never bypassed as part of a fallback path? |
+| Degradation strategies | Verify degradation strategies are defined per `standards/resilience.md` §5 (Degradation Strategies table). For each non-critical dependency, check whether a strategy is in place: cached data, feature disablement, partial results, defaults, or queue-for-later. |
+| Degradation indicators | Verify degradation indicators comply with `standards/resilience.md` §5 (Rules). Check whether every degraded response includes an explicit indicator and whether callers can ever silently receive stale or partial data. |
+| Cache TTL for degradation | Verify stale cache serving complies with `standards/resilience.md` §5 (Rules — Cache TTLs for degradation). Check the maximum staleness window and whether stale serves are logged. |
+| Degradation hierarchy | Verify a degradation hierarchy is documented per `standards/resilience.md` §5 (Rules). Check whether critical vs non-critical features are identified and documented in the operational runbook. |
+| Security in degradation | Verify degraded responses comply with `standards/resilience.md` §5 (Rules). Check that authentication and authorisation are never bypassed as part of a fallback path. |
 
 ### 2.6 Health & Readiness
 
 | Aspect | What to evaluate |
 |---|---|
-| Probe types | Are all three probe types implemented: liveness (`/health/live`), readiness (`/health/ready`), and startup (`/health/startup`)? |
-| Liveness correctness | Is the liveness probe cheap and dependency-free? Does it only check that the process is running -- not call the database or other services? |
-| Readiness correctness | Does the readiness probe check critical dependencies only (database, cache, essential downstream services)? Does it avoid checking non-critical dependencies? |
-| Startup probe configuration | Does the startup probe have generous timeouts (e.g., check every 5s, fail after 60s) to allow for migrations, cache warming, and pool initialisation? |
-| Graceful shutdown | On SIGTERM, does the service: (1) stop accepting new requests, (2) drain in-flight requests (up to 30s), (3) close connections and release resources, (4) exit with code 0? |
-| Shutdown logging | Is the shutdown sequence logged at INFO: "Shutdown initiated", "Draining N in-flight requests", "Shutdown complete"? |
-| Health response format | Do health endpoints return structured JSON with `status` and per-dependency check details (status, latency_ms)? |
-| No sensitive data | Are credentials, internal IPs, and stack traces excluded from health check responses? |
+| Probe types | Verify all three probe types are implemented per `standards/resilience.md` §6 (Probe Types table). Check for liveness, readiness, and startup probes. |
+| Liveness correctness | Verify the liveness probe complies with `standards/resilience.md` §6 (Rules). Check that it is cheap and dependency-free -- not calling the database or other services. |
+| Readiness correctness | Verify the readiness probe complies with `standards/resilience.md` §6 (Rules). Check that it checks critical dependencies only and does not check non-critical dependencies. |
+| Startup probe configuration | Verify startup probe configuration complies with `standards/resilience.md` §6 (Rules — Startup probes). Check the check interval and failure threshold against the specified guidance. |
+| Graceful shutdown | Verify graceful shutdown complies with `standards/resilience.md` §6 (Rules — Graceful shutdown). Check the four-step sequence: stop accepting, drain in-flight, close connections, exit cleanly. |
+| Shutdown logging | Verify shutdown logging complies with `standards/resilience.md` §6 (Rules — Graceful shutdown). Check for the required INFO-level log messages during the shutdown sequence. |
+| Health response format | Verify health endpoint response format complies with `standards/resilience.md` §6 (Rules). Check for structured JSON with status and per-dependency check details. |
+| No sensitive data | Verify health endpoints exclude sensitive data per `standards/resilience.md` §6 (Rules). Check that credentials, internal IPs, and stack traces are absent from responses. |
 
 ### 2.7 Back-Pressure
 
 | Aspect | What to evaluate |
 |---|---|
-| Overload signalling | Does the service return HTTP 429 (Too Many Requests) with a `Retry-After` header when it cannot accept additional work? |
-| Queue depth limits | Does every internal queue (work queue, message buffer, request queue) have a bounded maximum depth? Is unbounded queue growth prevented? |
-| Queue sizing | Are queue depths appropriate: in-memory work queue ~1,000, message broker consumer buffer ~100, request backlog ~128? |
-| Load shedding | Under overload, are low-priority requests shed first? Is there priority-based admission control (health checks always admitted, critical operations next, standard operations shed first, background jobs shed immediately)? |
-| Rejection visibility | Is every rejected or shed request given an explicit error response and logged? Is work ever silently dropped? |
-| Per-tenant rate limiting | Are rate limiters applied per-tenant or per-caller where possible, not only globally? Can a single noisy caller consume the entire system's capacity? |
-| Back-pressure monitoring | Are 429 response rate, queue depth, and rejection count tracked as metrics? Is there an alert when 429 rate exceeds 5% sustained over 1 minute? |
+| Overload signalling | Verify overload signalling complies with `standards/resilience.md` §7 (Rules). Check that the service returns HTTP 429 with a `Retry-After` header when it cannot accept additional work. |
+| Queue depth limits | Verify queue depth limits comply with `standards/resilience.md` §7 (Rules — Queue depth limits). Check that every internal queue has a bounded maximum depth and unbounded growth is prevented. |
+| Queue sizing | Verify queue sizes against `standards/resilience.md` §7 (Queue Type table). Check in-memory work queues, message broker consumer buffers, and request backlogs against the specified recommendations. |
+| Load shedding | Verify load shedding complies with `standards/resilience.md` §7 (Rules — Load shedding). Check whether priority-based admission control is implemented with the specified priority ordering. |
+| Rejection visibility | Verify rejection handling per `standards/resilience.md` §7 (Rules). Check that every rejected or shed request receives an explicit error response and is logged. No work should be silently dropped. |
+| Per-tenant rate limiting | Verify rate limiting scope per `standards/resilience.md` §7 (Rules). Check whether rate limiters are applied per-tenant or per-caller, not only globally. |
+| Back-pressure monitoring | Verify monitoring complies with `standards/resilience.md` §7 (Rules — Monitor and alert on back-pressure signals). Check that 429 rate, queue depth, and rejection count are tracked with appropriate alerting thresholds. |
 
 ### 2.8 Idempotency
 
 | Aspect | What to evaluate |
 |---|---|
-| Safe method idempotency | Are GET, HEAD, OPTIONS, and DELETE naturally idempotent as the HTTP protocol requires? |
-| Idempotency keys | Do POST and PATCH operations that may be retried accept an `Idempotency-Key` header or body field (UUID v4 recommended)? |
-| Key handling | On first receipt, is the result stored (keyed by idempotency key, 24-hour TTL)? On duplicate receipt, is the stored result returned without re-execution? On concurrent duplicate, is a lock used with 409 Conflict on timeout? |
-| Message consumer idempotency | Are message queue consumers idempotent? Is a deduplication store used (message ID mapped to processed flag) with TTL matching the queue's retention? |
-| Database operations | Are `INSERT ... ON CONFLICT DO NOTHING` (or equivalent upsert) patterns used instead of check-then-insert (which is racy under concurrency)? |
-| Duplicate logging | Are duplicate detections logged at DEBUG with the idempotency key? |
-| Key quality | Are idempotency keys proper UUIDs? Are timestamps, auto-increment IDs, or client IP addresses ever used (these are not unique across retries)? |
+| Safe method idempotency | Verify safe HTTP methods are naturally idempotent per `standards/resilience.md` §8 (Rules). Check GET, HEAD, OPTIONS, and DELETE operations. |
+| Idempotency keys | Verify POST and PATCH operations accept idempotency keys per `standards/resilience.md` §8 (Rules). Check for the `Idempotency-Key` header or body field support. |
+| Key handling | Verify idempotency key handling complies with `standards/resilience.md` §8 (Rules — Idempotency key handling). Check first-receipt storage with TTL, duplicate-receipt behaviour, and concurrent-duplicate locking. |
+| Message consumer idempotency | Verify message queue consumer idempotency per `standards/resilience.md` §8 (Rules). Check for a deduplication store with TTL matching the queue's retention period. |
+| Database operations | Verify database write patterns comply with `standards/resilience.md` §8 (Rules — Database operations). Check for upsert patterns instead of check-then-insert. |
+| Duplicate logging | Verify duplicate detection logging complies with `standards/resilience.md` §8 (Rules). Check that duplicates are logged at the specified level with the idempotency key. |
+| Key quality | Verify idempotency key quality per `standards/resilience.md` §8 (Rules). Check that keys are proper UUIDs and that timestamps, auto-increment IDs, or client IP addresses are not used. |
 
 ### 2.9 Cascading Failure Prevention
 
@@ -143,12 +143,12 @@ This is the most critical section. Individual resilience patterns are necessary 
 
 | Aspect | What to evaluate |
 |---|---|
-| Defensive stack | Is the full defensive stack applied to every outbound dependency call: timeout (outermost) > circuit breaker > bulkhead > retry (innermost) > actual call? |
-| Stack ordering | Is the ordering correct? Timeout outermost (bounded wait), circuit breaker inside (fail-fast on known-bad), bulkhead inside (concurrency limit), retry innermost (bounded retries)? |
-| Startup resilience | Can the service start and pass liveness checks even if a non-critical dependency is down? Are dependency connections lazily initialised? |
-| Blast radius boundaries | Are dependencies grouped into failure domains? Is a total failure of one domain isolated from services in another domain? Are failure domain boundaries documented? |
-| Shared resource protection | Can a single-component failure exhaust shared resources (connection pools, thread pools, memory)? |
-| Chaos testing | Has the resilience stack been tested with fault injection (network partitions, latency injection, dependency failures) in pre-production environments? |
+| Defensive stack | Verify the full defensive stack is applied per `standards/resilience.md` §9 (Required Pattern Combination). Check that every outbound dependency call is wrapped in timeout > circuit breaker > bulkhead > retry > actual call. |
+| Stack ordering | Verify stack ordering complies with `standards/resilience.md` §9 (Rules). Check that timeout is outermost, circuit breaker inside, bulkhead inside, and retry is innermost. |
+| Startup resilience | Verify startup behaviour complies with `standards/resilience.md` §9 (Rules — Dependency failure must not block startup). Check whether the service can start and pass liveness checks with non-critical dependencies down. |
+| Blast radius boundaries | Verify blast radius boundaries per `standards/resilience.md` §9 (Rules — Set blast radius boundaries). Check that dependencies are grouped into failure domains and that total failure of one domain is isolated from others. |
+| Shared resource protection | Check whether a single-component failure can exhaust shared resources (connection pools, thread pools, memory), violating `standards/resilience.md` §9 (Rules). |
+| Chaos testing | Assess whether the resilience stack has been validated with fault injection per `standards/resilience.md` §9 (Rules — Test cascading failure scenarios). Check for chaos engineering in pre-production environments. |
 
 ---
 

@@ -1,10 +1,10 @@
 ---
-name: assess-test-coverage
+name: assess-testing
 description: "Run testing strategy and coverage assessment using Test Trophy Model covering unit, integration, and end-to-end test quality and gaps"
-keywords: [assess test coverage, test audit, testing assessment]
+keywords: [assess testing, test audit, testing assessment, test coverage]
 ---
 
-# Test Coverage Assessment
+# Testing Assessment
 
 ## Role
 
@@ -47,46 +47,39 @@ This context frames every finding that follows. Do not skip it.
 
 ## Phase 2: Assessment
 
+Evaluate the application against each criterion below. Assess each area independently.
+
 ### 2.1 Test Trophy Evaluation
 
-The Test Trophy model prioritises (from largest to smallest investment):
-
-```
-        E2E
-       /   \
-     Integration
-    /           \
-   ----Unit------
-  Static Analysis
-```
+Evaluate the application's test distribution against the Test Trophy model defined in `standards/testing.md` §1 (Test Layers & Ratios).
 
 | Layer | What to evaluate |
 |---|---|
-| **Static analysis (base)** | Linting rules, type checking, formatting enforcement. Are these automated and gating in CI? Do they catch real issues or just style? Is there a consistent configuration across the codebase? |
-| **Unit tests** | Do they test behaviour (inputs -> outputs) or implementation (mocking internals)? Are they resilient to refactoring? Are they fast and deterministic? Do they avoid testing framework code? |
-| **Integration tests (largest layer)** | This should be the biggest layer. Do integration tests verify that components work together correctly? Do they test real interactions (database, API, message queue) or just mock everything? Are they reliable and not flaky? |
-| **End-to-end tests (small, focused)** | Are E2E tests limited to critical user journeys? Are they reliable? Do they provide value proportional to their maintenance cost? |
+| **Static analysis (base)** | Verify static analysis tooling is automated and gating in CI per `standards/testing.md`. Assess whether rules catch real issues or just style. Check for consistent configuration across the codebase. |
+| **Unit tests** | Evaluate whether unit tests follow the behavioural testing principles in `standards/testing.md`. Check: do they test inputs/outputs or mock internals? Are they resilient to refactoring? Fast and deterministic? |
+| **Integration tests (largest layer)** | Verify integration tests are the largest layer per the Test Trophy model in `standards/testing.md`. Do they test real interactions (database, API, queue) or mock everything? Are they reliable? |
+| **End-to-end tests (small, focused)** | Verify E2E tests are limited to critical user journeys per `standards/testing.md`. Assess reliability and maintenance cost proportionality. |
 
 ### 2.2 Behavioural Testing Quality
 
 | Aspect | What to evaluate |
 |---|---|
-| Test describes behaviour | Tests are named and structured around *what the system does* ("should return 404 when user not found") not *how it does it* ("should call repository.findById") |
-| Resilient to refactoring | Can the internal implementation change without breaking tests? If tests break on refactoring that doesn't change behaviour, they're testing implementation. |
-| Meaningful assertions | Assertions verify business-meaningful outcomes, not incidental details. No asserting on exact log messages or internal state that isn't part of the contract. |
-| Test isolation | Tests don't depend on each other's state or execution order. Each test sets up its own context. |
-| Determinism | No flaky tests. No time-dependent tests without clock abstraction. No order-dependent tests. No tests that pass in isolation but fail in suite (or vice versa). |
-| Edge cases and error paths | Happy path is covered, but so are error conditions, boundary values, null/empty inputs, concurrent access, and timeout scenarios. |
+| Test describes behaviour | Verify tests follow the naming and structure conventions in `standards/testing.md`. Tests should describe *what the system does*, not *how it does it*. |
+| Resilient to refactoring | Can the internal implementation change without breaking tests? Flag tests that are coupled to implementation details. |
+| Meaningful assertions | Verify assertions target business-meaningful outcomes per `standards/testing.md` testing principles. No asserting on incidental details. |
+| Test isolation | Verify each test sets up its own context with no shared mutable state or execution-order dependencies. |
+| Determinism | Identify flaky tests, time-dependent tests without clock abstraction, order-dependent tests. Evaluate against the flaky test policy in `standards/testing.md`. |
+| Edge cases and error paths | Assess coverage of error conditions, boundary values, null/empty inputs, concurrent access, and timeout scenarios beyond the happy path. |
 
 ### 2.3 Coverage Gap Analysis
 
 | Aspect | What to evaluate |
 |---|---|
-| Critical path coverage | Are the most important business flows (user registration, payment, data processing) thoroughly tested? |
-| Public API surface | Is every public endpoint/method tested for expected behaviour, error cases, and edge cases? |
-| Error handling paths | Are catch blocks, fallback logic, and error transformations tested? Or are they only exercised in production? |
-| Security-relevant paths | Are authentication, authorisation, input validation, and access control tested? |
-| Untested code | Identify specific files, classes, or functions with zero or minimal test coverage. Prioritise by risk. |
+| Critical path coverage | Verify the most important business flows are thoroughly tested per the coverage requirements in `standards/testing.md`. |
+| Public API surface | Check that every public endpoint/method is tested for expected behaviour, error cases, and edge cases. |
+| Error handling paths | Identify untested catch blocks, fallback logic, and error transformations. |
+| Security-relevant paths | Verify authentication, authorisation, input validation, and access control are tested. |
+| Untested code | Identify specific files, classes, or functions with zero or minimal coverage. Prioritise by risk. |
 
 ### 2.4 Bug Identification
 
@@ -102,25 +95,27 @@ Actively search the codebase for bugs. For each bug found:
 
 ### 2.5 CI/CD Pipeline Quality
 
+Evaluate pipeline quality gates against the requirements in `standards/ci-cd.md` and `standards/testing.md`.
+
 | Aspect | What to evaluate |
 |---|---|
-| Test gating | Are tests run on every PR? Do failing tests block merge? Is this enforced (not just advisory)? |
-| Coverage gating | Is there a minimum coverage threshold? Does it gate PRs? Is it meaningful (not just line coverage)? |
-| Lint gating | Are linting errors blocking? Is the linter configuration comprehensive and consistent? |
-| Type checking | Is static type checking enforced in CI (TypeScript strict mode, mypy, etc.)? |
-| Security scanning | Is SAST/DAST/SCA integrated into the pipeline? Does it gate deployments? |
-| Build verification | Does CI build the application and verify it starts/runs correctly? |
-| Pipeline speed | How long is the feedback loop from push to green/red? Is it fast enough to not slow development? |
-| Environment parity | Do tests run against environments that match production (database, services, config)? |
-| Branch protection | Are main/production branches protected? Is force-push blocked? Are reviews required? |
+| Test gating | Verify tests run on every PR and failing tests block merge per `standards/ci-cd.md` §2 (Required Pipeline Stages). |
+| Coverage gating | Verify coverage threshold is enforced per `standards/testing.md` coverage requirements. |
+| Lint gating | Verify linting errors block merge per `standards/ci-cd.md` §2. |
+| Type checking | Verify static type checking is enforced in CI per `standards/ci-cd.md` §2. |
+| Security scanning | Verify SAST/DAST/SCA is integrated per `standards/ci-cd.md` §2 and `standards/security.md`. |
+| Build verification | Does CI build the application and verify it starts correctly? |
+| Pipeline speed | Evaluate feedback loop time against the 10-minute target in `standards/ci-cd.md` §8. |
+| Environment parity | Do tests run against environments that match production? |
+| Branch protection | Verify branch protection rules per `standards/ci-cd.md` §3. |
 
 ### 2.6 Linting & Static Analysis
 
 | Aspect | What to evaluate |
 |---|---|
-| Linter configuration | What rules are enabled? Are they appropriate for the language and framework? Are there unjustified rule suppressions? |
-| Consistency | Is the same configuration applied across the entire codebase? Are there files or directories excluded without justification? |
-| Formatting | Is code formatting automated and enforced (Prettier, PHP-CS-Fixer, `dotnet format`, Checkstyle)? Is it gating in CI? |
+| Linter configuration | Evaluate rules against the linting requirements in `standards/ci-cd.md` §2. Are rules appropriate? Are there unjustified suppressions? |
+| Consistency | Is the same configuration applied across the entire codebase? Are there unjustified exclusions? |
+| Formatting | Verify formatting is automated and gating in CI per `standards/ci-cd.md` §2. |
 | Custom rules | Are there project-specific rules that encode team conventions or catch common mistakes? |
 | IDE integration | Are linting rules available in developer IDEs for fast feedback? |
 

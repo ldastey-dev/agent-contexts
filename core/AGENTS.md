@@ -141,6 +141,9 @@ The following standards are non-negotiable. Do not weaken them. Detailed guidanc
 | GDPR | Lawful basis, data minimisation, subject rights | `.context/standards/gdpr.md` |
 | PCI DSS | CDE scoping, AES-256, TLS 1.2+ | `.context/standards/pci-dss.md` |
 | Accessibility | WCAG 2.2 AA, keyboard, ARIA, contrast | `.context/standards/accessibility.md` |
+| Architecture | Clean Architecture, dependency direction, layer boundaries | `.context/standards/architecture.md` |
+| IaC | State management, drift detection, container security | `.context/standards/iac.md` |
+| Tech Debt | Debt taxonomy, impact scoring, paydown strategy | `.context/standards/tech-debt.md` |
 
 ---
 

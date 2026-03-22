@@ -46,88 +46,88 @@ Evaluate the application against each criterion below. Assess each area independ
 
 | Aspect | What to evaluate |
 |---|---|
-| Deployment practices | Automated deployments, rollback capability, deployment frequency, change management |
-| Operational procedures | Runbooks, incident response, on-call processes, post-incident reviews |
-| Evolutionary architecture | Ability to evolve without large-scale rewrites, fitness functions, architectural decision records (ADRs) |
-| Observability | Monitoring, logging, distributed tracing, alerting, and dashboards -- can you answer arbitrary questions about system behaviour in production? |
-| Team autonomy | Can teams deploy independently? Are there shared bottlenecks? |
+| Deployment practices | Assess deployment automation, rollback capability, deployment frequency, and change management processes. Check alignment with deployment strategy requirements in `standards/iac.md` §5 (Deployment Strategy). |
+| Operational procedures | Review runbooks, incident response, on-call processes, and post-incident review practices. Evaluate against the DR runbook requirements in `standards/iac.md` §6.4 (DR Runbooks). |
+| Evolutionary architecture | Evaluate the system's ability to evolve without large-scale rewrites. Check for fitness functions and ADRs against the requirements in `standards/architecture.md` §8 (Evolutionary Architecture) and §7 (Architecture Decision Records). |
+| Observability | Assess monitoring, logging, distributed tracing, alerting, and dashboards. Determine whether the team can answer arbitrary questions about system behaviour in production. |
+| Team autonomy | Evaluate whether teams can deploy independently. Identify shared bottlenecks. Check service boundary autonomy against `standards/architecture.md` §6.1 (Boundary Principles). |
 
 #### Reliability
 
 | Aspect | What to evaluate |
 |---|---|
-| Failure detection | Health checks, synthetic monitoring, anomaly detection, alerting thresholds -- how quickly are failures identified? |
-| Failure mode analysis | What happens when each dependency fails? Are failure modes documented? |
-| Data integrity | Consistency guarantees, transaction boundaries, eventual consistency handling |
-| Recovery design | Self-healing capability, automated recovery, data recovery procedures |
-| Redundancy | Single points of failure, replication strategy, multi-region readiness |
-| Capacity planning | Load testing evidence, scaling thresholds, resource headroom |
+| Failure detection | Review health checks, synthetic monitoring, anomaly detection, and alerting thresholds. Assess how quickly failures are identified. |
+| Failure mode analysis | Determine what happens when each dependency fails. Check whether failure modes are documented. Evaluate failure isolation against `standards/architecture.md` §6.1 (Boundary Principles -- failure isolation). |
+| Data integrity | Assess consistency guarantees, transaction boundaries, and eventual consistency handling. |
+| Recovery design | Evaluate self-healing capability, automated recovery, and data recovery procedures against `standards/iac.md` §6 (Disaster Recovery & Business Continuity). |
+| Redundancy | Identify single points of failure. Review replication strategy and multi-region readiness against failover requirements in `standards/iac.md` §6.3 (Failover Capability). |
+| Capacity planning | Review load testing evidence, scaling thresholds, and resource headroom. |
 
 #### Performance Efficiency
 
 | Aspect | What to evaluate |
 |---|---|
-| Compute selection | Right-sized resources, scaling policies, serverless vs always-on decisions |
-| Data layer design | Database selection appropriateness, read/write separation, caching tiers |
-| Network design | Latency-sensitive paths, CDN usage, data locality, connection management |
-| Architecture-level performance | Asynchronous processing where appropriate, command/query separation, event-driven patterns |
+| Compute selection | Assess whether resources are right-sized. Review scaling policies and serverless vs always-on decisions against `standards/iac.md` §7.2 (Right-Sizing). |
+| Data layer design | Evaluate database selection appropriateness, read/write separation, and caching tiers. |
+| Network design | Review latency-sensitive paths, CDN usage, data locality, and connection management. |
+| Architecture-level performance | Assess use of asynchronous processing, command/query separation, and event-driven patterns where appropriate. |
 
 #### Security (Architectural Lens)
 
 | Aspect | What to evaluate |
 |---|---|
-| Trust boundaries | Where are trust boundaries drawn? Are they enforced architecturally? |
-| Defence in depth | Multiple layers of security controls, not single points of enforcement |
-| Data classification | Is data classified and handled according to sensitivity? |
-| Data protection | Encryption at rest and in transit, key management, certificate lifecycle, tokenisation of sensitive fields |
-| Identity architecture | Centralised vs distributed identity, token propagation, service-to-service auth |
+| Trust boundaries | Identify where trust boundaries are drawn and whether they are enforced architecturally. Check layer boundary enforcement against `standards/architecture.md` §3 (Layer Boundaries). |
+| Defence in depth | Evaluate whether multiple layers of security controls exist, rather than single points of enforcement. |
+| Data classification | Determine whether data is classified and handled according to sensitivity. |
+| Data protection | Assess encryption at rest and in transit, key management, certificate lifecycle, and tokenisation of sensitive fields. Verify secret handling against `standards/iac.md` §4.4 (Secure Secret Delivery). |
+| Identity architecture | Evaluate centralised vs distributed identity, token propagation, and service-to-service authentication. |
 
 #### Cost Optimisation
 
 | Aspect | What to evaluate |
 |---|---|
-| Resource efficiency | Over-provisioned resources, idle compute, storage waste |
-| Architecture cost drivers | Chatty inter-service communication, unnecessary data movement, over-engineered solutions |
-| Cost visibility | Tagging, cost allocation, budget alerts |
+| Resource efficiency | Identify over-provisioned resources, idle compute, and storage waste. Evaluate against `standards/iac.md` §7 (Cost Management) requirements. |
+| Architecture cost drivers | Assess for chatty inter-service communication, unnecessary data movement, and over-engineered solutions. Check synchronous chain limits in `standards/architecture.md` §6.2 (Anti-Patterns). |
+| Cost visibility | Review tagging, cost allocation, and budget alerts against `standards/iac.md` §7.1 (Resource Tagging) and §7.5 (Cost Alerting). |
 
 #### Sustainability
 
 | Aspect | What to evaluate |
 |---|---|
-| Resource utilisation | Efficient use of compute, storage, and network |
-| Scaling efficiency | Scale-to-zero capability, right-sizing, demand-driven scaling |
-| Architectural efficiency | Minimising unnecessary processing, efficient data transfer patterns |
+| Resource utilisation | Assess efficient use of compute, storage, and network. |
+| Scaling efficiency | Evaluate scale-to-zero capability, right-sizing, and demand-driven scaling against `standards/iac.md` §7.6 (Scale-to-Zero). |
+| Architectural efficiency | Assess for unnecessary processing and inefficient data transfer patterns. |
 
 ### 2.2 Clean Architecture
 
 | Aspect | What to evaluate |
 |---|---|
-| Dependency direction | Dependencies point inward toward the domain. Infrastructure and UI depend on the domain, never the reverse. |
-| Domain isolation | Core business logic is free from framework, database, and infrastructure concerns |
-| Layer boundaries | Clear separation between domain, application, infrastructure, and presentation layers |
-| Use case encapsulation | Application use cases are explicit, testable units -- not scattered across controllers or services |
-| Interface segregation at boundaries | Ports/adapters or equivalent pattern used at architectural boundaries |
-| Testability | Domain and application layers are testable without infrastructure dependencies |
+| Dependency direction | Trace import graphs to verify dependencies point inward toward the domain. Evaluate against the dependency direction rules in `standards/architecture.md` §1 (Dependency Direction). Infrastructure and UI must depend on the domain, never the reverse. |
+| Domain isolation | Verify that core business logic is free from framework, database, and infrastructure concerns. Check against the domain isolation rules and allowed/disallowed items in `standards/architecture.md` §2 (Domain Isolation). |
+| Layer boundaries | Assess separation between domain, application, infrastructure, and presentation layers. Evaluate layer responsibilities and enforcement against `standards/architecture.md` §3 (Layer Boundaries). |
+| Use case encapsulation | Verify that application use cases are explicit, testable units. Check for use case logic scattered across controllers or services, which violates `standards/architecture.md` §3.2 (Boundary Enforcement Rules). |
+| Interface segregation at boundaries | Assess whether ports/adapters or equivalent patterns are used at architectural boundaries. Evaluate interface design against `standards/architecture.md` §4 (Interface Segregation at Boundaries). |
+| Testability | Verify that domain and application layers are testable without infrastructure dependencies. Evaluate each layer's testability against `standards/architecture.md` §9 (Testability). |
 
 ### 2.3 API Design
 
 | Aspect | What to evaluate |
 |---|---|
-| Contract clarity | Are API contracts explicit, versioned, and documented (OpenAPI/Swagger, GraphQL schema)? |
-| Versioning strategy | How are breaking changes managed? URL versioning, header versioning, or semantic versioning? |
-| Consistency | Naming conventions, error response structure, pagination patterns -- are they uniform? |
-| Error handling | Structured error responses with actionable detail, appropriate HTTP status codes, no internal leakage |
-| Idempotency | Are write operations idempotent where they should be? |
-| Documentation | Is the API self-documenting or accompanied by up-to-date documentation? |
+| Contract clarity | Determine whether API contracts are explicit, versioned, and documented (OpenAPI/Swagger, GraphQL schema). Evaluate communication contracts against `standards/architecture.md` §6.1 (Boundary Principles -- communication contracts). |
+| Versioning strategy | Assess how breaking changes are managed -- URL versioning, header versioning, or semantic versioning. |
+| Consistency | Review naming conventions, error response structure, and pagination patterns for uniformity across all APIs. |
+| Error handling | Assess for structured error responses with actionable detail, appropriate HTTP status codes, and absence of internal detail leakage. |
+| Idempotency | Determine whether write operations are idempotent where they should be. |
+| Documentation | Evaluate whether the API is self-documenting or accompanied by up-to-date documentation. |
 
 ### 2.4 Configuration & Environment Management
 
 | Aspect | What to evaluate |
 |---|---|
-| 12-Factor compliance | Configuration externalised from code, environment parity, stateless processes |
-| Feature flags | Feature toggle system, gradual rollout capability, flag lifecycle management |
-| Environment separation | Dev/staging/prod configuration isolation, no environment-specific code paths |
-| Secret separation | Secrets managed separately from configuration, not in environment variables alongside non-sensitive config |
+| 12-Factor compliance | Verify that configuration is externalised from code, environments have parity, and processes are stateless. Evaluate against `standards/iac.md` §4.1 (Environment Parity) and §4.3 (Configuration Injection). |
+| Feature flags | Assess the feature toggle system, gradual rollout capability, and flag lifecycle management. Check progressive delivery practices against `standards/iac.md` §5.5 (Progressive Delivery). |
+| Environment separation | Evaluate dev/staging/prod configuration isolation. Check for environment-specific code paths that violate `standards/iac.md` §4.1 (Environment Parity). |
+| Secret separation | Verify that secrets are managed separately from non-sensitive configuration. Evaluate against `standards/iac.md` §4.4 (Secure Secret Delivery). |
 
 ---
 

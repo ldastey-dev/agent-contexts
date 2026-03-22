@@ -28,20 +28,11 @@ The goal of discovery is completeness, not accuracy. Capture everything; refine 
 
 ### 1.1 Debt Taxonomy
 
-Classify every debt item using the following categories:
-
-| Category | Examples |
-|---|---|
-| **Design debt** | Missing abstractions, violated SOLID principles, God classes, tight coupling, unclear module boundaries, circular dependencies |
-| **Code debt** | Dead code, duplicated code, magic values, poor naming, excessive complexity, long methods, inconsistent conventions |
-| **Test debt** | Missing tests, flaky tests, low coverage areas, test-implementation coupling, slow test suites, missing integration tests |
-| **Infrastructure debt** | Manual deployments, missing IaC, outdated CI pipelines, no observability, environment drift, missing staging environments |
-| **Dependency debt** | Outdated dependencies, unpatched vulnerabilities, deprecated APIs, unmaintained libraries, version conflicts |
-| **Documentation debt** | Missing READMEs, stale ADRs, undocumented APIs, missing runbooks, outdated onboarding guides, missing architecture diagrams |
+Classify every debt item using the six-category taxonomy defined in `standards/tech-debt.md` §1 (Debt Taxonomy). Every item must be assigned to exactly one of: design debt, code debt, test debt, infrastructure debt, dependency debt, or documentation debt. Use the signals and examples in the standard to guide classification.
 
 ### 1.2 Debt Discovery Techniques
 
-Use multiple techniques to ensure comprehensive coverage. No single method catches everything. Combine automated tooling with human insight -- tools find what is measurable, people find what is painful.
+Use the discovery techniques defined in `standards/tech-debt.md` §2 (Debt Discovery) at minimum. No single technique catches everything. Combine automated tooling with human insight -- tools find what is measurable, people find what is painful.
 
 | Technique | What it reveals |
 |---|---|
@@ -79,53 +70,25 @@ With the full debt inventory in hand, score, estimate, and prioritise every item
 
 ### 2.1 Impact Scoring
 
-Score each debt item across four dimensions. Use a 1-5 scale for each.
+Score each debt item using the four-dimension weighted model defined in `standards/tech-debt.md` §3 (Impact Scoring). Apply the 1-5 scale consistently using the dimension definitions and scoring rubric in §3.1 and §3.2.
 
-| Dimension | 1 (Minimal) | 3 (Moderate) | 5 (Severe) |
-|---|---|---|---|
-| **Developer velocity** | Rarely encountered; no meaningful slowdown | Encountered weekly; requires workarounds | Encountered daily; significant time wasted on every change in the area |
-| **Incident risk** | No history of related incidents; low blast radius | Occasional issues; moderate blast radius | Frequent incidents or near-misses; high blast radius affecting customers |
-| **Onboarding difficulty** | New starters understand the area quickly | Requires significant explanation; tribal knowledge needed | New starters cannot work in the area without extensive hand-holding |
-| **Feature delivery friction** | Does not impede feature work | Slows feature delivery; requires careful navigation | Blocks or significantly delays features; workarounds create more debt |
+Compute the composite score using the formula in `standards/tech-debt.md` §3.3 (Composite Score Calculation). For each item, record the individual dimension scores alongside the weighted total to allow re-prioritisation if organisational priorities shift.
 
-**Weighted total:** `(Velocity × 0.30) + (Incident risk × 0.30) + (Onboarding × 0.15) + (Feature friction × 0.25)`
-
-Higher scores indicate more impactful debt. Adjust weights to reflect your organisation's priorities -- for example, a team with frequent production incidents may weight incident risk higher, while a rapidly growing team may weight onboarding difficulty higher.
-
-For each debt item, record the individual dimension scores alongside the weighted total. This allows re-prioritisation if organisational priorities shift without rescoring from scratch.
+Adjust dimension weights to reflect organisational priorities where justified -- for example, a team with frequent production incidents may weight incident risk higher, while a rapidly growing team may weight onboarding difficulty higher.
 
 ### 2.2 Effort Estimation
 
-Estimate the effort to remediate each item using T-shirt sizes:
-
-| Size | Indicative range | Characteristics |
-|---|---|---|
-| **S** | 1-4 hours | Single file or method. Mechanical change. Low risk. No design decisions required. |
-| **M** | 4-16 hours (0.5-2 days) | Multiple files. Some design consideration. Tests need updating. One developer, one PR. |
-| **L** | 16-40 hours (2-5 days) | Cross-cutting change. Requires design discussion. Multiple PRs. May need feature flag. |
-| **XL** | 40-80+ hours (1-2+ weeks) | Architectural change. Multiple teams involved. Phased rollout. Significant testing effort. |
+Estimate the effort to remediate each item using the T-shirt sizes defined in `standards/tech-debt.md` §4 (Effort Estimation). Use only the four permitted sizes (S, M, L, XL) with the hour ranges and characteristics specified in the standard.
 
 When estimating, account for the full cost: investigation, implementation, testing, code review, and deployment. If an item requires a feature flag or phased rollout, include that overhead. When in doubt, round up -- debt remediation routinely takes longer than expected because the debt itself makes the code harder to change.
 
 ### 2.3 Prioritisation Matrix
 
-Plot each debt item on an impact-versus-effort quadrant:
-
-| | **Low effort (S/M)** | **High effort (L/XL)** |
-|---|---|---|
-| **High impact (score ≥ 3.5)** | **Quick wins** -- do these first. High return, low investment. Schedule immediately. | **Strategic investments** -- high value but significant effort. Plan carefully, break into increments, schedule across sprints. |
-| **Low impact (score < 3.5)** | **Low priority** -- do opportunistically. Good candidates for the boy scout rule or onboarding tasks. | **Major projects** -- high cost, low return. Defer unless strategic. Reassess periodically -- conditions may change. |
+Plot each debt item on the impact-versus-effort quadrant defined in `standards/tech-debt.md` §5 (Prioritisation). Use the quadrant thresholds and action guidance from the standard to determine execution order.
 
 ### 2.4 Paydown Strategy
 
-Balance debt reduction with feature delivery. Choose and combine approaches based on team context:
-
-| Strategy | When to use | Trade-offs |
-|---|---|---|
-| **Boy scout rule** | Always. "Leave the code better than you found it." Fix small debt items as you encounter them during feature work. | Low overhead; inconsistent coverage; only addresses debt in areas being actively changed. |
-| **Continuous allocation** | When debt is widespread and persistent. Allocate a fixed percentage of sprint capacity (e.g., 15-20%) to debt reduction every sprint. | Predictable progress; sustainable; requires discipline to protect the allocation from feature pressure. |
-| **Dedicated debt sprints** | When a critical mass of high-impact debt blocks feature delivery. Run a focused sprint (or half-sprint) entirely on debt reduction. | Fast progress on targeted areas; disruptive to feature delivery; risk of "big bang" changes. |
-| **Debt budget** | When debt items vary widely in size. Allocate a fixed number of story points per sprint to debt, chosen from the prioritised backlog. | Flexible; easy to track; integrates with existing sprint planning. |
+Select and combine paydown approaches from those defined in `standards/tech-debt.md` §6 (Paydown Strategy). Follow the recommended blend in §6.5 as a baseline. Balance debt reduction with feature delivery.
 
 Recommend a blended approach: continuous allocation as the baseline, boy scout rule as a cultural norm, and occasional targeted sprints for high-severity clusters. Document the chosen strategy in the report so it can be communicated to stakeholders and protected during sprint planning.
 
@@ -192,7 +155,7 @@ Phased schedule with target dates, sprint allocation, and expected outcomes per 
 
 ### Metrics
 
-Track debt reduction over time using concrete, measurable indicators:
+Track debt reduction over time using the metrics defined in `standards/tech-debt.md` §8 (Metrics). At minimum, track:
 
 | Metric | What it measures | How to track |
 |---|---|---|
@@ -207,7 +170,7 @@ Track debt reduction over time using concrete, measurable indicators:
 
 ## Phase 3: Reduction Plan
 
-Group and order remediation actions into phases. Each phase builds on the previous one -- do not skip ahead. The ordering is deliberate: tests come first to create a safety net, then low-risk improvements build confidence, then progressively larger structural changes are made with full regression protection.
+Group and order remediation actions into the phase sequence defined in `standards/tech-debt.md` §7 (Reduction Ordering). Each phase builds on the previous one -- do not skip ahead. The ordering is deliberate: tests come first to create a safety net, then low-risk improvements build confidence, then progressively larger structural changes are made with full regression protection.
 
 | Phase | Rationale |
 |---|---|

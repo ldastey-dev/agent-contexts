@@ -45,89 +45,89 @@ Evaluate the application against each criterion below. Assess each area independ
 
 | Aspect | What to evaluate |
 |---|---|
-| Cache-first reads | Does every read operation check local or in-memory cache before making a network call? Or are network calls made unconditionally? |
-| Polling patterns | Are there any periodic, scheduled, or loop-based API polling patterns? These should be replaced with event-driven approaches (webhooks, pub/sub, SSE) unless architecturally justified. |
-| Batch utilisation | Where APIs support batch endpoints, are they used? Or are N individual requests made when one batch call would suffice? |
-| Short-circuit validation | Are all inputs validated before making API or database calls? Or do invalid requests consume network round-trips before failing? |
-| Duration tracking | Is `duration_ms` logged on every operation? Can slow or chatty patterns be identified from logs? |
-| Cache effectiveness | Is `cache_hit` tracked as a structured log attribute? Can cache effectiveness be measured without code changes? |
+| Cache-first reads | Verify cache-first read patterns comply with `standards/cost-optimisation.md` §1 (Eliminate Redundant Calls — Cache-first reads). Check whether every read operation checks local or in-memory cache before making a network call. |
+| Polling patterns | Check for polling violations per `standards/cost-optimisation.md` §1 (Eliminate Redundant Calls — Never poll). Look for periodic, scheduled, or loop-based API polling that should be replaced with event-driven approaches. |
+| Batch utilisation | Verify batch endpoint usage per `standards/cost-optimisation.md` §1 (Eliminate Redundant Calls — Batch when the API supports it). Check whether N individual requests are made when one batch call would suffice. |
+| Short-circuit validation | Verify input validation ordering per `standards/cost-optimisation.md` §1 (Eliminate Redundant Calls — Short-circuit on validation failure). Check whether all inputs are validated before making API or database calls. |
+| Duration tracking | Verify `duration_ms` logging per `standards/cost-optimisation.md` §1 (Measure and Track). Check whether every operation logs duration for identifying slow or chatty patterns. |
+| Cache effectiveness | Verify `cache_hit` tracking per `standards/cost-optimisation.md` §1 (Measure and Track). Check whether cache effectiveness can be measured from structured logs. |
 
 ### 2.2 Dependency Minimisation
 
 | Aspect | What to evaluate |
 |---|---|
-| Standard library alternatives | Are there third-party packages that duplicate functionality available in the standard library or platform? |
-| Package maintenance health | Are all dependencies actively maintained? Check last release date, open issues, and bus factor. |
-| Transitive dependency graph | What is the total transitive dependency count? Are there packages that pull in dozens of sub-dependencies for minimal functionality? |
-| Native extensions | Are there packages with native extensions that increase build time and platform-specific failure risk? Are pure alternatives available? |
-| Unused dependencies | Are there installed packages that are no longer imported or used? Dead dependencies still contribute to install time and image size. |
-| Licence compliance | Are all dependency licences permissive (MIT, Apache-2.0, BSD)? Copyleft (GPL, AGPL) creates legal and financial risk. |
-| Version pinning | Are direct dependencies pinned to exact versions? Is the lock file committed? |
+| Standard library alternatives | Check for standard library duplication per `standards/cost-optimisation.md` §2 (Before Adding a Package — question 1). Look for third-party packages that duplicate functionality available in the standard library or platform. |
+| Package maintenance health | Verify package health per `standards/cost-optimisation.md` §2 (Before Adding a Package — question 2). Check last release date, open issues, and bus factor for all dependencies. |
+| Transitive dependency graph | Assess transitive dependency impact per `standards/cost-optimisation.md` §2 (Before Adding a Package — question 3). Check total transitive dependency count and look for packages that pull in excessive sub-dependencies for minimal functionality. |
+| Native extensions | Check for native extension concerns per `standards/cost-optimisation.md` §2 (Before Adding a Package — question 4). Look for packages with native extensions that increase build time and whether pure alternatives are available. |
+| Unused dependencies | Check for unused dependencies per `standards/cost-optimisation.md` §2 (Ongoing Hygiene). Look for installed packages that are no longer imported or used. |
+| Licence compliance | Verify licence compliance per `standards/cost-optimisation.md` §9 (Licence Compliance). Check that all dependency licences are permissive and flag any copyleft licences. |
+| Version pinning | Verify version pinning per `standards/cost-optimisation.md` §2 (Ongoing Hygiene). Check that direct dependencies are pinned to exact versions and the lock file is committed. |
 
 ### 2.3 Data Transfer Efficiency
 
 | Aspect | What to evaluate |
 |---|---|
-| Pagination defaults | Are default page sizes conservative (50 for list/search, 10 for autocomplete, 500 for export)? Are hard maximums enforced? |
-| Unbounded responses | Can any endpoint return unbounded result sets? Every list/search endpoint must enforce a maximum. |
-| Payload minimisation | Are internal-only or empty fields stripped from API responses? Are full nested objects returned when identifiers and summaries would suffice? |
-| Compression | Is gzip or brotli response compression enabled on all HTTP endpoints? |
-| Binary serialisation | For high-volume inter-service communication, is binary serialisation (Protocol Buffers, MessagePack) considered over JSON? |
-| Write path efficiency | Do write operations target local filesystem by default, avoiding network mount or cloud storage FUSE mount egress costs? |
+| Pagination defaults | Verify pagination defaults against `standards/cost-optimisation.md` §3 (Result Pagination table). Check default page sizes and hard maximums for each endpoint type. |
+| Unbounded responses | Check for unbounded responses prohibited by `standards/cost-optimisation.md` §3 (Result Pagination). Verify that every list/search endpoint enforces a maximum. |
+| Payload minimisation | Verify payload minimisation per `standards/cost-optimisation.md` §3 (Payload Minimisation). Check whether internal-only or empty fields are stripped and whether full nested objects are returned when identifiers and summaries would suffice. |
+| Compression | Verify compression per `standards/cost-optimisation.md` §3 (Compression). Check whether gzip or brotli response compression is enabled on all HTTP endpoints. |
+| Binary serialisation | Assess binary serialisation for high-volume inter-service communication per `standards/cost-optimisation.md` §3 (Compression). Check whether Protocol Buffers, MessagePack, or similar is considered over JSON where payload volume is high. |
+| Write path efficiency | Verify write path efficiency per `standards/cost-optimisation.md` §3 (Payload Minimisation). Check whether write operations target local filesystem by default, avoiding network mount or cloud storage FUSE mount egress costs. |
 
 ### 2.4 Compute Right-Sizing
 
 | Aspect | What to evaluate |
 |---|---|
-| Instance type selection | Are instance types chosen based on observability data, or are they guessed? Is ARM64 (Graviton, etc.) evaluated for the 20-30% cost reduction? |
-| Spot/preemptible usage | Are batch jobs, CI runners, and non-latency-critical workloads using spot or preemptible instances? |
-| Auto-scaling configuration | For variable-load services, are auto-scaling policies configured with both minimum and maximum limits? |
-| Serverless sizing | For serverless functions, is the memory tier benchmarked using power-tuning tools? Are deployment packages small (no test files, docs, or dev dependencies)? |
-| Reserved concurrency | For serverless, is reserved concurrency set to prevent runaway scaling costs from retry storms? |
-| Container right-sizing | For containerised workloads, are vCPU and memory allocations based on actual observed utilisation? |
-| Client initialisation | Are expensive clients (HTTP, database, SDK) initialised once per process lifetime (singleton/lazy init), not recreated per request? |
-| Lazy imports | Are heavyweight modules loaded lazily to keep startup fast, avoiding unnecessary import-time cost? |
+| Instance type selection | Verify instance type selection per `standards/cost-optimisation.md` §4 (General Principles table). Check whether selections are based on observability data and whether ARM64 has been evaluated. |
+| Spot/preemptible usage | Verify spot/preemptible usage per `standards/cost-optimisation.md` §4 (General Principles table). Check whether batch jobs, CI runners, and non-latency-critical workloads use spot instances. |
+| Auto-scaling configuration | Verify auto-scaling per `standards/cost-optimisation.md` §4 (General Principles table). Check that auto-scaling policies have both minimum and maximum limits for variable-load services. |
+| Serverless sizing | Verify serverless configuration per `standards/cost-optimisation.md` §4 (Serverless). Check whether memory tier is benchmarked, deployment packages are small, and reserved concurrency is set. |
+| Reserved concurrency | Verify reserved concurrency per `standards/cost-optimisation.md` §4 (Serverless). Check whether it is set to prevent runaway scaling costs from retry storms. |
+| Container right-sizing | Verify container sizing per `standards/cost-optimisation.md` §4 (Containers). Check whether vCPU and memory allocations are based on actual observed utilisation. |
+| Client initialisation | Verify client initialisation per `standards/cost-optimisation.md` §4 (Local / On-Demand Processes). Check that expensive clients (HTTP, database, SDK) are initialised once per process lifetime, not recreated per request. |
+| Lazy imports | Verify lazy import patterns per `standards/cost-optimisation.md` §4 (Local / On-Demand Processes). Check whether heavyweight modules are loaded lazily to keep startup fast. |
 
 ### 2.5 Storage Cost Management
 
 | Aspect | What to evaluate |
 |---|---|
-| Tiered storage | Are storage tiers used appropriately (hot for frequent access, warm/IA for < 1x/month, cold/archive for compliance/DR)? |
-| Lifecycle policies | Are lifecycle policies configured to transition objects automatically between tiers based on access patterns? |
-| Expiration rules | Are temporary artefacts (build outputs, CI caches, logs) set to expire? Or do they accumulate indefinitely? |
-| Orphaned resources | Are there unused volumes, snapshots, old container images, or abandoned storage buckets? Is there a regular cleanup schedule? |
+| Tiered storage | Verify tiered storage usage against `standards/cost-optimisation.md` §5 (Tiered Storage table). Check whether storage tiers are used appropriately for access frequency. |
+| Lifecycle policies | Verify lifecycle policies per `standards/cost-optimisation.md` §5. Check whether policies are configured to transition objects automatically between tiers based on access patterns. |
+| Expiration rules | Verify expiration rules per `standards/cost-optimisation.md` §5. Check whether temporary artefacts (build outputs, CI caches, logs) are set to expire or accumulate indefinitely. |
+| Orphaned resources | Check for orphaned resources per `standards/cost-optimisation.md` §5. Look for unused volumes, snapshots, old container images, and abandoned storage buckets. Assess whether a regular cleanup schedule exists. |
 
 ### 2.6 LLM Token Cost
 
 | Aspect | What to evaluate |
 |---|---|
-| Output structure | Are LLM-consumed outputs structured and concise (flat objects over deeply nested structures)? |
-| Metadata stripping | Are verbose metadata fields (internal timestamps, audit fields, raw API envelope wrappers) stripped from LLM-consumed outputs? |
-| Error conciseness | Are error responses single structured objects, not full stack traces or multi-paragraph explanations? |
-| Tool description economy | Are tool descriptions and docstrings concise? Every extra word costs tokens on every request. |
-| Default limits | Do list/search operations default to conservative limits (e.g., 50) rather than the maximum? |
+| Output structure | Verify LLM output structure per `standards/cost-optimisation.md` §6 (Output Discipline). Check whether outputs are structured and concise with flat objects over deeply nested structures. |
+| Metadata stripping | Verify metadata stripping per `standards/cost-optimisation.md` §6 (Output Discipline). Check whether verbose metadata fields (internal timestamps, audit fields, raw API envelope wrappers) are stripped from LLM-consumed outputs. |
+| Error conciseness | Verify error conciseness per `standards/cost-optimisation.md` §6 (Output Discipline). Check whether error responses are single structured objects, not full stack traces or multi-paragraph explanations. |
+| Tool description economy | Verify tool description economy per `standards/cost-optimisation.md` §6 (Output Discipline). Check whether tool descriptions and docstrings are concise, as every extra word costs tokens on every request. |
+| Default limits | Verify default limits per `standards/cost-optimisation.md` §6 (Limit Defaults). Check whether list/search operations default to conservative limits rather than the maximum. |
 
 ### 2.7 CI/CD Cost Controls
 
 | Aspect | What to evaluate |
 |---|---|
-| Runner tier | Is the cheapest appropriate runner tier used (e.g., `ubuntu-latest`)? Are expensive runners reserved for stages that require them? |
-| Dependency caching | Are dependencies cached via the package manager's cache support to avoid re-downloading on every run? |
-| Stage ordering | Are stages ordered cheapest-first (lint, format, type check before test, security scan) so cheap checks catch issues before expensive ones run? |
-| Path filtering | Are documentation-only or non-code changes excluded from expensive pipeline stages via path filters? |
-| Conditional stages | Are integration tests and other expensive stages conditional on environment variables or file changes? |
-| Artefact retention | Are ephemeral CI artefacts retained for a short period (7 days)? Is the default retention (often 90 days) overridden? Are release artefacts given distinct, longer retention? |
+| Runner tier | Verify runner tier selection per `standards/cost-optimisation.md` §7 (Pipeline Design). Check whether the cheapest appropriate runner tier is used and expensive runners are reserved for stages that require them. |
+| Dependency caching | Verify dependency caching per `standards/cost-optimisation.md` §7 (Pipeline Design). Check whether dependencies are cached to avoid re-downloading on every run. |
+| Stage ordering | Verify stage ordering per `standards/cost-optimisation.md` §7 (Pipeline Design). Check that stages are ordered cheapest-first so cheap checks catch issues before expensive ones run. |
+| Path filtering | Verify path filtering per `standards/cost-optimisation.md` §7 (Pipeline Design). Check whether documentation-only or non-code changes are excluded from expensive pipeline stages. |
+| Conditional stages | Check whether integration tests and other expensive stages are conditional per `standards/cost-optimisation.md` §7 (Pipeline Design). |
+| Artefact retention | Verify artefact retention per `standards/cost-optimisation.md` §7 (Artefact Retention). Check whether ephemeral CI artefacts have a short retention period and release artefacts have distinct, longer retention. |
 
 ### 2.8 Observability Cost
 
 | Aspect | What to evaluate |
 |---|---|
-| Log volume | Is the production log level set to INFO (not DEBUG)? Are full request/response payloads excluded from INFO-level logs? |
-| Log retention | Are log retention policies appropriate (7 days dev, 30 days production, 90 days if regulatory)? |
-| Metric aggregation | Are metrics aggregated in-process (histograms, counters) rather than emitted as per-request log lines? |
-| Metric export interval | Is the metrics export interval conservative (e.g., 60s) rather than the default? |
-| Metric cardinality | Are high-cardinality label values (user IDs, request IDs) avoided on metrics? Are traces used for per-request detail instead? |
-| Trace sampling | Is trace sampling configured (10-25% in production) to control observability backend costs? Is tail-based sampling used to capture errors and slow requests? |
+| Log volume | Verify log level configuration per `standards/cost-optimisation.md` §8 (Log Volume). Check that the production log level is appropriate and full request/response payloads are excluded from standard-level logs. |
+| Log retention | Verify log retention policies against `standards/cost-optimisation.md` §8 (Log Volume). Check retention periods for each environment against the specified recommendations. |
+| Metric aggregation | Verify metric aggregation per `standards/cost-optimisation.md` §8 (Metrics). Check whether metrics are aggregated in-process rather than emitted as per-request log lines. |
+| Metric export interval | Verify the metrics export interval per `standards/cost-optimisation.md` §8 (Metrics). Check whether it is set conservatively rather than relying on defaults. |
+| Metric cardinality | Verify metric cardinality per `standards/cost-optimisation.md` §8 (Metrics). Check for high-cardinality label values on metrics and whether traces are used for per-request detail instead. |
+| Trace sampling | Verify trace sampling per `standards/cost-optimisation.md` §8 (Sampling). Check whether sampling is configured at the recommended production rate and whether tail-based sampling is used for errors and slow requests. |
 
 ---
 

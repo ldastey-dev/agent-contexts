@@ -137,104 +137,104 @@ For every API endpoint, check compliance with the organisational standards defin
 
 | Aspect | What to evaluate |
 |---|---|
-| Resource naming | Nouns not verbs, plural collections, singular specifics, lowercase hyphens for multi-word. Flag every violation. |
-| HTTP method usage | Strict REST semantics. Flag misuse (e.g., POST for retrieval, GET with side effects, PUT for partial updates). |
-| Query parameter conventions | camelCase, `page`/`size` pagination, consistent naming across APIs. |
-| URL structure | `v1/{resource}/api/` for APIs, `v1/{resource}/mfe/` for micro-frontends. Flag deviations. |
-| Response field naming | camelCase, descriptive names (`customerId` not `id`), ISO 8601 dates. Check every response schema. |
-| Response envelope | Consistent envelope with `status`, `message`, `data`, `pagination` (where applicable), `links` (HATEOAS). Flag missing or inconsistent envelopes. |
-| Versioning | Path-based `/v1/`, `/v2/`. `API-Version` header for minor versions. N and N-1 support. Deprecation notices. |
-| Documentation | OpenAPI 3+ spec exists, is complete (descriptions, examples, constraints, auth, rate limits, errors), and is published. |
-| Health/readiness | `/health` and `/readiness` endpoints present and functional. |
+| Resource naming | Verify resource paths comply with `standards/api-design.md` REST Conventions — Resource Naming. Check for verbs in paths, singular collection names, and non-kebab-case multi-word segments. Flag every violation. |
+| HTTP method usage | Verify method semantics comply with `standards/api-design.md` REST Conventions — HTTP Method Semantics. Check for misuse (e.g., POST for retrieval, GET with side effects, PUT for partial updates). |
+| Query parameter conventions | Verify query parameters comply with `standards/api-design.md` REST Conventions — URL Structure. Check for camelCase naming, consistent `page`/`size` pagination, and naming consistency across APIs. |
+| URL structure | Verify URL patterns comply with the organisational URL structure (Microservices + Micro-Frontends section above). Check that API and MFE paths follow the specified patterns. Flag deviations. |
+| Response field naming | Verify field names comply with `standards/api-design.md` Response Structure — Field Naming. Check for camelCase consistency, descriptive context-qualified names, and ISO 8601 date format across every response schema. |
+| Response envelope | Verify response structure complies with `standards/api-design.md` Response Structure — Envelope Pattern. Check for consistent `status`, `message`, `data`, `pagination` (where applicable), and `links` (HATEOAS) fields. Flag missing or inconsistent envelopes. |
+| Versioning | Verify versioning complies with `standards/api-design.md` Versioning. Check for path-based major versioning, N and N-1 support, deprecation headers, and `Sunset` header usage per the specified deprecation policy. |
+| Documentation | Verify documentation complies with `standards/api-design.md` API Contract — OpenAPI Specification. Check that an OpenAPI 3+ spec exists, is complete (descriptions, examples, constraints, auth, rate limits, errors), and is published. |
+| Health/readiness | Verify operational endpoints comply with the organisational Operational standards above. Check that `/health` and `/readiness` endpoints are present and functional. |
 
 ### 2.2 API Contract Quality
 
 | Aspect | What to evaluate |
 |---|---|
-| OpenAPI spec completeness | Are all endpoints documented? Are request/response schemas complete with types, constraints (min/max, pattern, required), descriptions, and examples? |
-| Spec accuracy | Does the OpenAPI spec match the actual API behaviour? Are there undocumented endpoints, fields, or response codes? |
-| Spec-first vs code-first | Is the spec the source of truth (spec-first) or generated from code (code-first)? Is there drift between spec and implementation? |
-| Contract testing | Are there contract tests that verify the API implementation matches the OpenAPI spec? Are they gating in CI? |
-| Schema validation | Are request bodies validated against the schema? Are invalid requests rejected with clear error messages? |
-| Response codes | Are HTTP status codes used correctly and consistently? 200 for success, 201 for creation, 204 for no content, 400 for bad request, 401 for unauthenticated, 403 for forbidden, 404 for not found, 409 for conflict, 422 for validation errors, 429 for rate limited, 500 for server error. |
+| OpenAPI spec completeness | Verify spec completeness against `standards/api-design.md` API Contract — OpenAPI Specification. Check that all endpoints are documented with complete request/response schemas, types, constraints, descriptions, and examples. |
+| Spec accuracy | Compare the OpenAPI spec against actual API behaviour. Check for undocumented endpoints, fields, or response codes that indicate spec drift. |
+| Spec-first vs code-first | Determine whether the spec is the source of truth per `standards/api-design.md` API Contract — OpenAPI Specification. Identify any drift between spec and implementation. |
+| Contract testing | Verify contract testing practices comply with `standards/api-design.md` API Contract — Contract Testing. Check whether contract tests exist, verify implementation against the spec, and gate merges in CI. |
+| Schema validation | Verify request validation complies with `standards/api-design.md` API Contract — Schema Validation. Check that request bodies are validated against the schema and invalid requests are rejected with clear error messages. |
+| Response codes | Verify status code usage complies with `standards/api-design.md` HTTP Status Codes. Check for correct and consistent usage across all endpoints against the specified status code table. |
 
 ### 2.3 Error Handling
 
 | Aspect | What to evaluate |
 |---|---|
-| Error response structure | Are error responses consistent across all APIs? Do they follow a standard schema (ideally RFC 7807 Problem Details or a documented equivalent)? |
-| Error detail quality | Do errors include: a machine-readable error code, a human-readable message, field-level validation detail where applicable, and a correlation ID for support tracing? |
-| Error consistency | Does the same type of error produce the same response structure across different endpoints and services? |
-| Internal leakage | Do error responses ever leak stack traces, internal paths, database details, or implementation specifics? |
-| Validation errors | Are validation errors specific ("Field 'email' must be a valid email address") rather than generic ("Bad request")? Are all invalid fields reported in a single response (not one at a time)? |
-| Error documentation | Are error scenarios documented in the OpenAPI spec with example responses? Can consumers anticipate and handle errors without trial and error? |
+| Error response structure | Verify error responses comply with `standards/api-design.md` Error Handling — Error Response Format. Check for RFC 7807 Problem Details compliance (or documented equivalent) and consistency across all APIs. |
+| Error detail quality | Verify error detail fields comply with `standards/api-design.md` Error Handling — Error Rules. Check for machine-readable error codes, human-readable messages, field-level validation detail, and correlation IDs. |
+| Error consistency | Check whether the same type of error produces the same response structure across different endpoints and services. |
+| Internal leakage | Verify error responses comply with the information leakage rules in `standards/api-design.md` Error Handling — Error Rules and HTTP Status Codes — Status Code Rules. Check for stack traces, internal paths, database details, or implementation specifics in any error response. |
+| Validation errors | Verify validation error reporting complies with `standards/api-design.md` Error Handling — Error Rules. Check that errors are field-specific, descriptive, and all invalid fields are reported in a single response. |
+| Error documentation | Check whether error scenarios are documented in the OpenAPI spec with example responses, enabling consumers to anticipate and handle errors without trial and error. |
 
 ### 2.4 Pagination, Filtering & Sorting
 
 | Aspect | What to evaluate |
 |---|---|
-| Pagination implementation | Is `page`/`size` used consistently per organisational standards? Are `totalPages`, `totalItems`, `hasNextPage`, `hasPreviousPage` included? |
-| Default and maximum page size | Are sensible defaults set? Is there a maximum page size to prevent abuse? Are these documented? |
-| Unbounded responses | Are there collection endpoints that can return unbounded results? Every collection endpoint must paginate. |
-| Filtering | Are collection endpoints filterable? Are filter parameters consistent in naming and behaviour across APIs? |
-| Sorting | Is sorting supported where consumers need it? Is the sort parameter format consistent (`?sortBy=createdAt&sortOrder=desc`)? |
-| Search | For resources that need search, is there a consistent search mechanism? Full-text, field-specific, or query language? |
-| Cursor-based pagination | For high-volume or real-time data, is cursor-based pagination available as an alternative to offset-based? |
+| Pagination implementation | Verify pagination complies with `standards/api-design.md` Pagination, Filtering & Sorting — Pagination. Check for consistent `page`/`pageSize` parameters and required pagination response fields. |
+| Default and maximum page size | Verify page size handling complies with `standards/api-design.md` Pagination, Filtering & Sorting — Pagination. Check that sensible defaults are set, a maximum page size is enforced server-side, and these are documented. |
+| Unbounded responses | Check for collection endpoints that can return unbounded results. Per `standards/api-design.md` Non-Negotiables, every collection endpoint must paginate. |
+| Filtering | Verify filtering complies with `standards/api-design.md` Pagination, Filtering & Sorting — Filtering. Check that filter parameters are consistent in naming and behaviour, and unknown parameters are rejected. |
+| Sorting | Verify sorting complies with `standards/api-design.md` Pagination, Filtering & Sorting — Sorting. Check for consistent `sortBy`/`sortOrder` parameter format and documented default sort order. |
+| Search | For resources requiring search, assess whether a consistent search mechanism exists (full-text, field-specific, or query language). |
+| Cursor-based pagination | For high-volume or real-time data, check whether cursor-based pagination is available as per `standards/api-design.md` Pagination, Filtering & Sorting — Pagination. |
 
 ### 2.5 HATEOAS & Discoverability
 
 | Aspect | What to evaluate |
 |---|---|
-| Link presence | Do responses include HATEOAS `links` per the organisational envelope standard? Are `self`, `next`, `previous`, `first`, `last` links present on paginated responses? |
-| Action links | Do resource responses include links to available actions (edit, delete, related resources)? This is critical for AI agent consumers and adaptive UIs. |
-| Link consistency | Are link formats consistent (`href`, `rel`, `method`) across all APIs? |
-| Root resource | Is there an API root/index endpoint that lists available resources and their URLs? |
-| Discoverability | Can a consumer navigate the entire API starting from a single entry point, using only the links provided in responses? |
-| Documentation links | Do responses or error messages include links to relevant documentation? |
+| Link presence | Verify HATEOAS links comply with `standards/api-design.md` HATEOAS & Discoverability — Link Format and Link Rules. Check for `self`, `next`, `prev` links on paginated responses. |
+| Action links | Verify that resource responses include action links per `standards/api-design.md` HATEOAS & Discoverability — Link Rules. Check that available actions (edit, delete, related resources) are represented and respect authorisation state. |
+| Link consistency | Verify link format consistency against `standards/api-design.md` HATEOAS & Discoverability — Link Rules. Check that every link is an object with `href`, `rel` (implicit from key), and `method`. |
+| Root resource | Check whether an API root/index endpoint exists that lists available resources and their URLs. |
+| Discoverability | Assess whether a consumer can navigate the entire API starting from a single entry point, using only the links provided in responses. |
+| Documentation links | Check whether responses or error messages include links to relevant documentation. |
 
 ### 2.6 Idempotency & Reliability
 
 | Aspect | What to evaluate |
 |---|---|
-| Idempotent operations | Are PUT and DELETE truly idempotent? Repeating the same request produces the same result without side effects? |
-| Idempotency keys | For POST operations (creation, payments, critical writes), is there an idempotency key mechanism to prevent duplicate processing on retry? |
-| Retry safety | Can consumers safely retry failed requests? Is it documented which operations are safe to retry? |
-| Eventual consistency | For operations that are eventually consistent, is this communicated to consumers? Are there mechanisms to check completion status (polling, webhooks, or status endpoints)? |
-| Concurrency control | Is optimistic concurrency used for updates (ETags, version fields)? Are conflicting updates detected and reported (409 Conflict)? |
+| Idempotent operations | Verify idempotency guarantees comply with `standards/api-design.md` Idempotency & Reliability — Idempotency Guarantees. Check that PUT and DELETE are truly idempotent. |
+| Idempotency keys | Verify POST idempotency complies with `standards/api-design.md` Idempotency & Reliability — Idempotency Keys for POST. Check for `Idempotency-Key` header support on creation, payment, and critical write operations. |
+| Retry safety | Verify retry documentation complies with `standards/api-design.md` Idempotency & Reliability — Retry Safety. Check that it is documented which operations are safe to retry. |
+| Eventual consistency | For eventually consistent operations, check whether consistency behaviour is communicated to consumers and mechanisms exist to check completion status. |
+| Concurrency control | Verify optimistic concurrency complies with `standards/api-design.md` Idempotency & Reliability — Optimistic Concurrency. Check for ETag headers, `If-Match` requirements on updates, and 412 responses on conflicts. |
 
 ### 2.7 Rate Limiting & Throttling
 
 | Aspect | What to evaluate |
 |---|---|
-| Rate limit implementation | Are rate limits in place for all APIs? Are they per-consumer, per-endpoint, or global? |
-| Rate limit headers | Are standard rate limit headers returned? `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` (or equivalent). |
-| 429 responses | When rate limited, does the API return 429 with a `Retry-After` header and a clear error message? |
-| Rate limit documentation | Are rate limits documented per endpoint in the OpenAPI spec? Can consumers plan their usage? |
-| Graduated limits | Are there different rate limit tiers for different consumers or subscription levels? |
-| Burst handling | Is there burst allowance for legitimate traffic spikes? |
+| Rate limit implementation | Verify rate limiting is in place per `standards/api-design.md` Rate Limiting — Rate Limit Rules and Non-Negotiables. Check scope (per-consumer, per-endpoint, global). |
+| Rate limit headers | Verify rate limit headers comply with `standards/api-design.md` Rate Limiting — Rate Limit Headers. Check for `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset` on every response. |
+| 429 responses | Verify rate limit exceeded responses comply with `standards/api-design.md` Rate Limiting — Rate Limit Rules. Check for 429 status code with a `Retry-After` header and a clear error message. |
+| Rate limit documentation | Check whether rate limits are documented per endpoint in the OpenAPI spec, enabling consumers to plan their usage. |
+| Graduated limits | Check whether different rate limit tiers exist for different consumers or subscription levels. |
+| Burst handling | Check whether burst allowance exists for legitimate traffic spikes. |
 
 ### 2.8 Consumer Experience (Developer Experience)
 
 | Aspect | What to evaluate |
 |---|---|
-| Onboarding | How quickly can a new consumer go from zero to a successful API call? Is there a getting-started guide? |
-| Sandbox/testing | Is there a sandbox environment for consumers to test against? Does it behave like production? |
-| SDK availability | Are SDKs generated from OpenAPI specs? Are they published and versioned? Do they cover major languages used by consumers? |
-| Changelog | Is there a changelog that documents API changes? Can consumers subscribe to change notifications? |
-| Deprecation communication | Are deprecated endpoints marked in the OpenAPI spec? Are `Sunset` and `Deprecation` headers used? Is the deprecation timeline communicated clearly? |
-| Support channel | Is there a clear channel for API consumers to ask questions, report issues, and request features? |
-| Consistency across services | Do all services feel like they're part of the same API? Or does each service have its own conventions, error formats, and patterns? |
+| Onboarding | Assess time-to-first-successful-call for a new consumer. Check for a getting-started guide. |
+| Sandbox/testing | Check whether a sandbox environment exists for consumers to test against and whether it behaves like production. |
+| SDK availability | Check whether SDKs are generated from OpenAPI specs, published, versioned, and covering major consumer languages. |
+| Changelog | Check whether a changelog documents API changes and consumers can subscribe to change notifications. |
+| Deprecation communication | Verify deprecation practices comply with `standards/api-design.md` Versioning — Deprecation Policy. Check for `Sunset` and `Deprecation` headers, OpenAPI spec annotations, and communicated timelines. |
+| Support channel | Check whether a clear channel exists for API consumers to ask questions, report issues, and request features. |
+| Consistency across services | Assess whether all services feel like a single cohesive API or whether each has its own conventions, error formats, and patterns. |
 
 ### 2.9 API Security (Consumer-Facing)
 
 | Aspect | What to evaluate |
 |---|---|
-| Authentication consistency | Is the authentication mechanism consistent across all APIs? Is it documented with examples? |
-| Scope/permission model | Are API scopes or permissions granular and well-defined? Can consumers request only the access they need? |
-| API key management | Can consumers generate, rotate, and revoke API keys self-service? Are keys scoped appropriately? |
-| CORS configuration | Are CORS policies configured correctly for browser-based consumers? Not overly permissive? |
-| Input validation | Are all inputs validated and rejected with clear errors before processing? |
-| Sensitive data | Are sensitive fields masked or omitted from responses by default? Can consumers request them explicitly with elevated permissions? |
+| Authentication consistency | Check whether the authentication mechanism is consistent across all APIs and documented with examples. |
+| Scope/permission model | Check whether API scopes or permissions are granular and well-defined, allowing consumers to request only the access they need. |
+| API key management | Check whether consumers can generate, rotate, and revoke API keys self-service and whether keys are scoped appropriately. |
+| CORS configuration | Check whether CORS policies are configured correctly for browser-based consumers and are not overly permissive. |
+| Input validation | Verify input validation complies with `standards/api-design.md` API Contract — Schema Validation. Check that all inputs are validated and rejected with clear errors before processing. |
+| Sensitive data | Check whether sensitive fields are masked or omitted from responses by default and whether consumers can request them with elevated permissions. |
 
 ---
 

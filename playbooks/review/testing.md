@@ -1,10 +1,10 @@
 ---
-name: review-test-coverage
+name: review-testing
 description: "Test coverage review checking test quality, behavioural testing, coverage gaps, and test-to-implementation coupling"
-keywords: [review test coverage, test review, coverage review]
+keywords: [review testing, test review, coverage review]
 ---
 
-# Test Coverage Review
+# Testing Review
 
 ## Role
 

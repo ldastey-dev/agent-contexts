@@ -47,88 +47,88 @@ Evaluate the pipeline against each criterion below. Assess each area independent
 
 | Aspect | What to evaluate |
 |---|---|
-| Required stages present | Are all 8 required stages present: (1) dependency integrity, (2) linting, (3) format check, (4) type check, (5) security/vulnerability scan, (6) unit tests with coverage, (7) integration tests (conditional), (8) secret scanning? |
-| Stage ordering | Are stages ordered cheapest/fastest to most expensive? Lint, format, and type check should run before tests and security scans. Fail-early ordering minimises wasted compute. |
-| Fail-fast behaviour | Does the pipeline abort remaining stages when an earlier stage fails? Or does it run all stages regardless, wasting time and cost? |
-| Lock file verification | Does the install step fail if the lock file is out of sync with the manifest? Or can PRs with stale lock files pass? |
-| Lint strictness | Is the linter configured for zero warnings? Are inline suppressions required to have an explanatory comment? |
-| Format enforcement | Is formatting enforced in CI (not just suggested)? Does the check match the local formatter configuration? |
-| Type check coverage | Are all public function/method signatures typed (where the language supports it)? Does the type checker run in strict mode? |
+| Required stages present | Verify all required stages are present per `standards/ci-cd.md` §2 (Required Pipeline Stages). Check each stage against the numbered list and note any that are missing. |
+| Stage ordering | Verify stage ordering complies with `standards/ci-cd.md` §2 (ordered by cost). Check that cheapest/fastest stages run before expensive ones to minimise wasted compute on early failures. |
+| Fail-fast behaviour | Check whether the pipeline aborts remaining stages when an earlier stage fails, consistent with the fail-fast principle in `standards/ci-cd.md` §8 (Pipeline Optimisation). |
+| Lock file verification | Verify dependency integrity per `standards/ci-cd.md` §2 Stage 1 (Dependency Integrity). Check whether the install step fails if the lock file is out of sync with the manifest. |
+| Lint strictness | Verify linting configuration against `standards/ci-cd.md` §2 Stage 2 (Linting). Check for zero-warning enforcement and whether inline suppressions require explanatory comments. |
+| Format enforcement | Verify formatting enforcement per `standards/ci-cd.md` §2 Stage 3 (Format Check). Check that formatting is enforced in CI, not just suggested, and that it matches the local formatter configuration. |
+| Type check coverage | Verify type checking per `standards/ci-cd.md` §2 Stage 4 (Type Check). Check whether public function/method signatures are typed and whether the type checker runs in strict mode. |
 
 ### 2.2 Branch Protection
 
 | Aspect | What to evaluate |
 |---|---|
-| Status checks required | Are all CI stages configured as required status checks that must pass before merge? |
-| Approval requirements | Is at least one approving review required? Are stale approvals dismissed when new commits are pushed? |
-| Up-to-date requirement | Must branches be up to date with `main` before merging? This prevents "works on my branch" merge conflicts. |
-| Admin bypass | Can administrators or project owners bypass protection rules? They should not be able to. |
-| Force push prevention | Is force-pushing to `main` blocked? |
-| Direct commit prevention | Are direct commits to `main` blocked, requiring all changes to go through PRs? |
+| Status checks required | Verify status check requirements against `standards/ci-cd.md` §3 (Branch Protection Rules). Check that all CI stages are configured as required status checks before merge. |
+| Approval requirements | Verify approval requirements per `standards/ci-cd.md` §3. Check whether at least one approving review is required and whether stale approvals are dismissed on new commits. |
+| Up-to-date requirement | Verify the up-to-date requirement per `standards/ci-cd.md` §3. Check whether branches must be current with `main` before merging. |
+| Admin bypass | Verify admin bypass is prevented per `standards/ci-cd.md` §3. Check whether administrators or project owners can bypass protection rules. |
+| Force push prevention | Verify force push prevention per `standards/ci-cd.md` Non-Negotiables. Check whether force-pushing to `main` is blocked. |
+| Direct commit prevention | Check whether direct commits to `main` are blocked, requiring all changes to go through PRs as specified in `standards/ci-cd.md` Non-Negotiables. |
 
 ### 2.3 Fast Feedback
 
 | Aspect | What to evaluate |
 |---|---|
-| Pipeline duration | Does the full pipeline complete in under 10 minutes? If not, what are the bottlenecks? |
-| Stage parallelisation | Are independent stages (lint, format, type check) running in parallel? Or are they sequential, wasting time? |
-| Dependency caching | Are dependencies cached between runs? Are cache keys based on lock file hashes for correctness? |
-| Build artefact caching | Are build outputs, Docker layers, or compilation caches reused across runs? |
-| Fail-fast configuration | Does the pipeline use `fail-fast` or equivalent to cancel in-flight parallel jobs when one fails? |
-| Path filtering | Are documentation-only changes skipped from expensive stages (tests, security scans)? Are path filters configured? |
-| Runner selection | Is the cheapest appropriate runner tier used? Are expensive runners reserved for stages that need them? |
+| Pipeline duration | Verify pipeline duration against the target in `standards/ci-cd.md` §8 (Execution Time Target). Identify bottlenecks if the target is exceeded. |
+| Stage parallelisation | Verify stage parallelisation per `standards/ci-cd.md` §8 (Pipeline Optimisation — Parallelise independent stages). Check whether independent stages (lint, format, type check) run in parallel. |
+| Dependency caching | Verify dependency caching per `standards/ci-cd.md` §8 (Pipeline Optimisation — Cache aggressively). Check whether cache keys are based on lock file hashes for correctness. |
+| Build artefact caching | Check whether build outputs, Docker layers, or compilation caches are reused across runs, consistent with caching guidance in `standards/ci-cd.md` §8. |
+| Fail-fast configuration | Verify fail-fast configuration per `standards/ci-cd.md` §8 (Pipeline Optimisation — Fail fast). Check whether in-flight parallel jobs are cancelled when one fails. |
+| Path filtering | Check whether documentation-only changes are excluded from expensive stages via path filters, as recommended in `standards/ci-cd.md` §8 (Pipeline Optimisation). |
+| Runner selection | Check whether the cheapest appropriate runner tier is used per `standards/ci-cd.md` §8. Verify that expensive runners are reserved for stages that need them. |
 
 ### 2.4 Security Scanning
 
 | Aspect | What to evaluate |
 |---|---|
-| Vulnerability scanning | Is a dependency vulnerability scanner running in CI? What severity threshold blocks the pipeline (should be HIGH or CRITICAL)? |
-| Secret scanning | Is secret scanning enabled at the repository or organisation level? Is a CI-step scanner (gitleaks, trufflehog) also in place? |
-| CVE suppression policy | Are suppressed CVEs documented with a justification and an expiry date? Or are they silently ignored? |
-| Scan freshness | Is the vulnerability database updated on each run, or is it stale? |
-| SBOM generation | Can a Software Bill of Materials be generated from the pipeline? |
+| Vulnerability scanning | Verify vulnerability scanning against `standards/ci-cd.md` §2 Stage 5 (Security & Vulnerability Scan). Check whether a scanner is running and whether the severity threshold that blocks the pipeline matches the standard. |
+| Secret scanning | Verify secret scanning per `standards/ci-cd.md` §2 Stage 8 (Secret Scanning). Check for both repository/organisation-level scanning and CI-step scanning. |
+| CVE suppression policy | Check whether suppressed CVEs are documented with a justification and an expiry date per `standards/ci-cd.md` §2 Stage 5. Identify any silently ignored findings. |
+| Scan freshness | Check whether the vulnerability database is updated on each run or is stale. |
+| SBOM generation | Check whether a Software Bill of Materials can be generated from the pipeline. |
 
 ### 2.5 Test Coverage Gate
 
 | Aspect | What to evaluate |
 |---|---|
-| Coverage threshold | Is a minimum coverage threshold enforced in CI? What is the current value (recommended >= 90%)? |
-| Regression prevention | Does the pipeline block PRs that reduce coverage below the threshold? |
-| Coverage reporting | Is the coverage report uploaded as a CI artefact for review? |
-| Integration test gating | Are integration tests configured to run conditionally (e.g., environment variable trigger)? Are they skipped by default to keep feedback fast? |
-| Test result reporting | Are test results visible in the PR (e.g., as a status check comment or artefact)? |
+| Coverage threshold | Verify the coverage threshold against `standards/ci-cd.md` §2 Stage 6 (Unit Tests with Coverage Gate). Check the current value and whether it meets the recommended minimum. |
+| Regression prevention | Check whether the pipeline blocks PRs that reduce coverage below the threshold, per `standards/ci-cd.md` Non-Negotiables (Coverage regressions block merge). |
+| Coverage reporting | Verify coverage report uploading per `standards/ci-cd.md` §2 Stage 6. Check whether the report is uploaded as a CI artefact for review. |
+| Integration test gating | Verify integration test configuration per `standards/ci-cd.md` §2 Stage 7 (Integration Tests). Check whether they run conditionally and are skipped by default to keep feedback fast. |
+| Test result reporting | Check whether test results are visible in the PR as a status check comment or artefact. |
 
 ### 2.6 Local Developer Experience
 
 | Aspect | What to evaluate |
 |---|---|
-| Task runner | Is there a Makefile, Taskfile, justfile, or equivalent with targets for lint, format, test, and audit? |
-| Pre-commit hooks | Are pre-commit hooks configured (husky, lefthook, pre-commit framework) to catch issues before push? |
-| CI parity | Do local checks match CI checks? Can a developer run the same linter, formatter, and test commands locally? |
-| Setup documentation | Is the local setup process documented and achievable in 3 commands or fewer? |
+| Task runner | Verify a task runner is present per `standards/ci-cd.md` §5 (Local Pre-commit Checks). Check for a Makefile, Taskfile, justfile, or equivalent with targets for lint, format, test, and audit. |
+| Pre-commit hooks | Verify pre-commit hook configuration per `standards/ci-cd.md` §5. Check whether a pre-commit framework is configured to catch issues before push. |
+| CI parity | Check whether local checks match CI checks. Verify that developers can run the same linter, formatter, and test commands locally as specified in `standards/ci-cd.md` §5. |
+| Setup documentation | Check whether the local setup process is documented and achievable in a minimal number of commands. |
 
 ### 2.7 Release Pipeline
 
 | Aspect | What to evaluate |
 |---|---|
-| Release trigger | Is the release triggered by a version tag (e.g., `v*`)? Or is it a manual, error-prone process? |
-| Gate enforcement | Do all CI gates pass on the tagged commit before the release artefact is built? |
-| Artefact publishing | Is the distributable automatically published to the appropriate registry? |
-| Release notes | Are release notes auto-generated from commit history? |
-| Artefact retention | Are ephemeral CI artefacts retained for a short period (7 days) while release artefacts are kept longer? |
+| Release trigger | Verify the release trigger per `standards/ci-cd.md` §7 (Release Pipeline). Check whether releases are triggered by a version tag or are a manual process. |
+| Gate enforcement | Verify gate enforcement per `standards/ci-cd.md` §7. Check that all CI gates pass on the tagged commit before the release artefact is built. |
+| Artefact publishing | Verify artefact publishing per `standards/ci-cd.md` §7. Check whether the distributable is automatically published to the appropriate registry. |
+| Release notes | Check whether release notes are auto-generated from commit history per `standards/ci-cd.md` §7. |
+| Artefact retention | Check artefact retention policies. Verify that ephemeral CI artefacts have a short retention period while release artefacts are kept longer. |
 
 ### 2.8 Flow Metrics & Continuous Improvement
 
 | Aspect | What to evaluate |
 |---|---|
-| DORA: Lead time for changes | Is the time from commit to production tracked? Target: < 1 day. |
-| DORA: Deployment frequency | Is deployment frequency measured? Target: multiple per day or at minimum per sprint. |
-| DORA: Change failure rate | Is the percentage of deployments causing failures tracked? Target: < 5%. |
-| DORA: Mean time to recovery | Is MTTR measured? Target: < 1 hour. |
-| Pipeline duration tracking | Is CI pipeline duration tracked as a metric over time? Are regressions treated as defects? |
-| Flaky test management | Are flaky tests identified, quarantined, and fixed? Or do they erode trust in the pipeline? |
-| Branch lifespan | Are branches short-lived (merged within 1-2 days)? Or do long-lived branches accumulate merge conflict risk? |
-| Batch size | Are PRs small and focused (one concern per PR)? Or do large, bundled PRs delay feedback and review? |
+| DORA: Lead time for changes | Check whether lead time from commit to production is tracked. Verify against the target in `standards/ci-cd.md` §8 (Metrics to Track table). |
+| DORA: Deployment frequency | Check whether deployment frequency is measured. Verify against the target in `standards/ci-cd.md` §8 (Metrics to Track table). |
+| DORA: Change failure rate | Check whether the percentage of deployments causing failures is tracked. Verify against the target in `standards/ci-cd.md` §8 (Metrics to Track table). |
+| DORA: Mean time to recovery | Check whether MTTR is measured. Verify against the target in `standards/ci-cd.md` §8 (Metrics to Track table). |
+| Pipeline duration tracking | Check whether CI pipeline duration is tracked as a metric over time. Verify whether regressions are treated as defects per `standards/ci-cd.md` §8 (Execution Time Target). |
+| Flaky test management | Verify flaky test handling per `standards/ci-cd.md` §8 (Flow Principles — Flaky tests are pipeline bugs). Check whether flaky tests are identified, quarantined, and fixed. |
+| Branch lifespan | Verify branch lifespan against `standards/ci-cd.md` §8 (Flow Principles — Short-lived branches). Check whether branches are merged within the recommended timeframe. |
+| Batch size | Verify PR size guidance per `standards/ci-cd.md` §8 (Flow Principles — Small batch sizes). Check whether PRs are small and focused on one concern. |
 
 ---
 

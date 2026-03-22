@@ -120,7 +120,7 @@ For each issue found:
 
 ## Standards Reference
 
-Apply the criteria defined in `standards/aws-well-architected.md` and `standards/cost-optimisation.md`. Flag any deviation as a finding.
+Apply the criteria defined in `standards/architecture.md`, `standards/aws-well-architected.md`, and `standards/cost-optimisation.md`. Flag any deviation as a finding.
 
 ---
 

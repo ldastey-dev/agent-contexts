@@ -45,85 +45,85 @@ Evaluate the application against each criterion below. Assess each area independ
 
 | Aspect | What to evaluate |
 |---|---|
-| Memory leaks | Objects that grow unboundedly over time: caches without eviction, event listener accumulation, closures capturing large scopes, static collections that only grow. |
-| Disposal patterns | Are disposable resources (connections, streams, file handles, HTTP clients) properly disposed? Are `using`/`try-with-resources`/`finally` patterns used consistently? |
-| Connection management | Database connection pooling configured correctly? HTTP client reuse (not creating new clients per request)? Connection limits appropriate? |
-| Buffer management | Large allocations on hot paths, unnecessary copying, string concatenation in loops, large object heap pressure. |
-| Resource exhaustion paths | What happens when connection pools are exhausted? When memory pressure is high? When file descriptors run out? Is there graceful handling or does the application crash? |
-| Finaliser/destructor abuse | Objects relying on finalisers for cleanup instead of deterministic disposal? |
+| Memory leaks | Check for common memory leak patterns listed in `standards/performance.md` §1 (Memory Leak Identification table). Look for unbounded caches, event listener accumulation, closures capturing large scopes, and static collections that only grow. |
+| Disposal patterns | Verify disposable resources comply with `standards/performance.md` §1 (Disposal & Lifecycle). Check whether `using`/`try-with-resources`/`finally` patterns are used consistently for connections, streams, file handles, and HTTP clients. |
+| Connection management | Verify connection pooling configuration against `standards/performance.md` §1 (Connection Pooling). Check that HTTP clients and database connections are pooled and reused, not created per-request. Confirm pool sizes have explicit upper bounds. |
+| Buffer management | Check for violations of `standards/performance.md` §1 (Buffer Management). Look for large allocations on hot paths, unnecessary copying, string concatenation in loops, and reading entire streams into memory without known size bounds. |
+| Resource exhaustion paths | Verify resource exhaustion handling complies with `standards/performance.md` §1 (Resource Exhaustion Handling). Check whether connection pool exhaustion, memory pressure, and file descriptor limits are handled gracefully or cause unhandled crashes. |
+| Finaliser/destructor abuse | Check for objects relying on finalisers for cleanup instead of deterministic disposal as required by `standards/performance.md` §1 (Disposal & Lifecycle). |
 
 ### 2.2 Algorithm & Data Structure Efficiency
 
 | Aspect | What to evaluate |
 |---|---|
-| Time complexity | Identify O(n²) or worse algorithms where O(n log n) or O(n) is achievable. Look for nested loops over large collections, repeated linear searches, and naive sorting. |
-| Space complexity | Unnecessary data duplication, loading entire datasets into memory when streaming would work, materialising collections unnecessarily. |
-| Data structure selection | Using lists for lookups (should be dictionaries/sets), arrays for frequent insertions (should be linked lists or better), wrong collection types for the access pattern. |
-| String handling | String concatenation in loops (use StringBuilder/join), repeated parsing, unnecessary encoding/decoding cycles, regex compilation in loops. |
-| Unnecessary computation | Computing values that are never used, recomputing values that could be cached, doing work inside loops that could be hoisted outside. |
-| LINQ/stream abuse | Materialising intermediate collections unnecessarily, multiple enumerations of the same source, deferred execution misunderstandings. |
+| Time complexity | Check for violations of `standards/performance.md` §2 (Time Complexity). Identify nested loops over large collections, repeated linear searches, and naive sorting where better alternatives exist. |
+| Space complexity | Verify compliance with `standards/performance.md` §2 (Space Complexity). Look for unnecessary data duplication, loading entire datasets into memory when streaming would work, and materialising collections unnecessarily. |
+| Data structure selection | Check collection type choices against `standards/performance.md` §2 (Correct Collection Types). Look for lists used for lookups (should be hash-based), arrays for frequent insertions, and wrong collection types for the access pattern. |
+| String handling | Verify string operations comply with `standards/performance.md` §2 (String Handling). Look for concatenation in loops, repeated parsing, unnecessary encoding/decoding cycles, and regex compilation in loops. |
+| Unnecessary computation | Check for violations of `standards/performance.md` §2 (Unnecessary Computation). Look for values computed but never used, recomputed values that could be cached, and loop-invariant work inside loops. |
+| LINQ/stream abuse | Check for intermediate collection materialisation, multiple enumerations of the same source, and deferred execution misunderstandings. Verify lazy evaluation patterns from `standards/performance.md` §2 (Space Complexity) are followed. |
 
 ### 2.3 Database Access Patterns
 
 | Aspect | What to evaluate |
 |---|---|
-| N+1 queries | Loading a collection then querying for each item individually. This is the most common and impactful database anti-pattern. Check ORM eager/lazy loading configuration. |
-| Missing indexes | Queries filtering or sorting on columns without indexes. Check slow query patterns and execution plans. |
-| Over-fetching | Selecting all columns (`SELECT *`) when only a few are needed. Loading full entities when only IDs or summaries are required. |
-| Under-fetching | Multiple round trips to the database for data that could be fetched in a single query or join. |
-| Unbounded queries | Queries without `LIMIT`/`TOP` that could return millions of rows. Pagination missing on list endpoints. |
-| Connection lifecycle | Opening connections too early, holding them too long, not returning them to the pool promptly. Connections held during external API calls or slow operations. |
-| Transaction scope | Transactions that are too broad (holding locks unnecessarily) or too narrow (inconsistent data). Long-running transactions blocking other operations. |
-| Write amplification | Updating entire entities when only one field changed. Redundant writes. Missing batch operations. |
-| Migration safety | Are database migrations backward-compatible? Can they run without downtime? Are they reversible? |
-| Query construction | Dynamic query building susceptible to SQL injection, missing parameterisation, ORM-generated queries that are unexpectedly complex. |
+| N+1 queries | Check for violations of `standards/performance.md` §3 (N+1 Query Prevention). Look for queries inside loops iterating over parent result sets. Verify ORM eager/lazy loading configuration. |
+| Missing indexes | Verify compliance with `standards/performance.md` §3 (Index Awareness). Check whether every WHERE clause, JOIN condition, and ORDER BY column has a supporting index. |
+| Over-fetching | Check for violations of `standards/performance.md` §3 (Over-Fetching). Look for `SELECT *` usage and loading full entities when only IDs or summaries are required. |
+| Under-fetching | Look for multiple round trips to the database for data that could be fetched in a single query or join, counter to the batch patterns in `standards/performance.md` §3 (N+1 Query Prevention). |
+| Unbounded queries | Verify compliance with `standards/performance.md` §3 (Unbounded Queries). Check that every variable-result query includes a LIMIT and that paginated endpoints enforce a maximum page size. |
+| Connection lifecycle | Check connection management against `standards/performance.md` §3 (Connection Lifecycle). Look for connections opened too early, held too long, not returned to the pool promptly, or held during external API calls. |
+| Transaction scope | Verify transaction patterns comply with `standards/performance.md` §3 (Transaction Scope). Look for transactions that are too broad, too narrow, or that span external I/O or long computations. |
+| Write amplification | Check for violations of `standards/performance.md` §3 (Write Amplification). Look for updating entire entities when only one field changed, redundant writes, and missing batch operations. |
+| Migration safety | Assess whether database migrations are backward-compatible, can run without downtime, and are reversible. |
+| Query construction | Check for dynamic query building susceptible to SQL injection, missing parameterisation, and ORM-generated queries that are unexpectedly complex. |
 
 ### 2.4 Caching Strategy
 
 | Aspect | What to evaluate |
 |---|---|
-| Missing caching | Expensive operations or frequently accessed data with no caching layer. Repeated identical database queries or API calls. |
-| Cache invalidation | How is cache consistency maintained? Time-based expiry, event-based invalidation, or manual? Are there stale data risks? |
-| Cache stampede | What happens when a popular cache key expires and many requests try to rebuild it simultaneously? Is there protection (locking, stale-while-revalidate)? |
-| Cache sizing | Are caches bounded? Could they grow unboundedly and cause memory pressure? |
-| Appropriate cache level | Is caching at the right layer? In-memory for per-instance, distributed for shared, CDN for static. |
-| Cache key design | Are cache keys specific enough to avoid collisions? Are they broad enough to maximise hit rates? |
+| Missing caching | Check for violations of `standards/performance.md` §4 (When to Cache). Look for expensive operations or frequently accessed data with no caching layer, and repeated identical database queries or API calls. |
+| Cache invalidation | Verify cache invalidation strategies comply with `standards/performance.md` §4 (Cache Invalidation). Check whether every cache has an explicit invalidation strategy and whether TTLs are set based on acceptable staleness. |
+| Cache stampede | Check for stampede protection as required by `standards/performance.md` §4 (Cache Stampede Protection). Assess what happens when a popular cache key expires and many requests try to rebuild it simultaneously. |
+| Cache sizing | Verify caches comply with `standards/performance.md` §4 (Cache Sizing & Eviction). Check that every in-memory cache has a maximum size and an appropriate eviction policy. |
+| Appropriate cache level | Verify caching is at the correct layer per `standards/performance.md` §4 (Cache Level). Check whether in-process, distributed, or CDN caching is used appropriately for the deployment model. |
+| Cache key design | Assess whether cache keys are specific enough to avoid collisions and broad enough to maximise hit rates. |
 
 ### 2.5 Async/Concurrency Correctness
 
 | Aspect | What to evaluate |
 |---|---|
-| Async/await | Missing await on async calls (fire-and-forget bugs), sync-over-async (blocking on async code), async-over-sync (wrapping sync code in Task.Run unnecessarily). |
-| Thread safety | Shared mutable state without synchronisation, race conditions, incorrect use of concurrent collections. |
-| Deadlock potential | Lock ordering issues, async deadlocks from `.Result`/`.Wait()`, nested lock acquisition. |
-| Parallelism appropriateness | CPU-bound work running sequentially when it could be parallelised, I/O-bound work using thread pool instead of async I/O. |
-| Task/Promise management | Unobserved exceptions in tasks, task leaks (created but never awaited or tracked), unbounded task creation. |
-| Concurrency limits | Unbounded parallelism that could overwhelm downstream resources, missing semaphores or throttling on concurrent outbound calls. |
+| Async/await | Check for violations of `standards/performance.md` §5 (Missing Await, Sync-over-Async). Look for missing awaits on async calls, sync-over-async blocking, and async-over-sync wrapping. |
+| Thread safety | Verify shared mutable state is protected per `standards/performance.md` §5 (Thread Safety). Look for unprotected shared state, race conditions, and incorrect use of concurrent collections. |
+| Deadlock potential | Check for deadlock risks identified in `standards/performance.md` §5 (Deadlock Prevention). Look for lock ordering issues, async deadlocks from `.Result`/`.Wait()`, and nested lock acquisition. |
+| Parallelism appropriateness | Assess whether CPU-bound work is parallelised and I/O-bound work uses async I/O rather than thread pool threads, consistent with patterns in `standards/performance.md` §5. |
+| Task/Promise management | Check for violations of `standards/performance.md` §5 (Task Management). Look for unobserved exceptions in tasks, task leaks, and unbounded task creation. |
+| Concurrency limits | Verify compliance with `standards/performance.md` §5 (Unbounded Parallelism). Check that concurrent operations have explicit upper bounds via semaphores or throttling. |
 
 ### 2.6 Resilience & Fault Tolerance
 
 | Aspect | What to evaluate |
 |---|---|
-| Circuit breakers | Are circuit breakers implemented for external dependency calls? What are the thresholds? Is there a half-open state for recovery detection? |
-| Retry policies | Are retries implemented with exponential backoff and jitter? Are only transient failures retried (not 400s)? Are retry counts bounded? |
-| Timeout handling | Are timeouts configured for all external calls (HTTP, database, message queue)? Are they appropriate (not too long, not too short)? Is there a timeout hierarchy (inner timeouts shorter than outer)? |
-| Bulkhead isolation | Are critical paths isolated from non-critical paths? Can a failure in one component exhaust resources for all components? |
-| Graceful degradation | When a dependency is unavailable, does the system degrade gracefully (serve cached data, disable non-critical features) or fail entirely? |
-| Fallback strategies | Are there fallback mechanisms for critical operations? Default values, cached responses, alternative providers? |
-| Health checks | Are there health check endpoints? Do they check actual dependency health? Do they distinguish between readiness (can serve traffic) and liveness (process is alive)? |
-| Back-pressure | When the system is overwhelmed, does it signal back-pressure (429 responses, queue depth limits) or accept more work than it can process? |
-| Idempotency | Are operations that might be retried (by clients or retry policies) idempotent? What happens on duplicate message delivery? |
-| Cascading failure prevention | If one service fails, does it cascade to dependent services? Are there mechanisms to prevent cascade (timeouts, circuit breakers, bulkheads)? |
+| Circuit breakers | Verify circuit breaker implementation against `standards/resilience.md` §1 (Circuit Breakers). Check coverage on external dependencies, state machine correctness, failure thresholds, and per-dependency isolation. |
+| Retry policies | Verify retry configuration against `standards/resilience.md` §2 (Retry Policies). Check backoff strategy, maximum attempts, retryable error classification, and total duration bounds. |
+| Timeout handling | Verify timeouts against `standards/resilience.md` §3 (Timeout Handling). Check that all external calls have explicit finite timeouts and that the timeout hierarchy (inner < outer) is respected. |
+| Bulkhead isolation | Verify resource isolation against `standards/resilience.md` §4 (Bulkhead Isolation). Check whether critical and non-critical paths use separate pools and whether per-dependency concurrency limits are enforced. |
+| Graceful degradation | Verify degradation strategies against `standards/resilience.md` §5 (Graceful Degradation). Check whether non-critical dependency failures are handled with fallbacks, cached data, or feature disablement. |
+| Fallback strategies | Check for fallback mechanisms per `standards/resilience.md` §5 (Degradation Strategies table). Assess whether default values, cached responses, or alternative providers are available for critical operations. |
+| Health checks | Verify health probe implementation against `standards/resilience.md` §6 (Health & Readiness). Check that liveness is cheap and dependency-free, readiness checks critical dependencies only, and startup probes have generous timeouts. |
+| Back-pressure | Verify back-pressure mechanisms against `standards/resilience.md` §7 (Back-Pressure). Check whether the system signals overload via 429 responses and whether queues have bounded depth limits. |
+| Idempotency | Verify idempotency patterns against `standards/resilience.md` §8 (Idempotency). Check whether retryable operations accept idempotency keys and whether duplicate message delivery is handled. |
+| Cascading failure prevention | Verify the defensive stack ordering against `standards/resilience.md` §9 (Cascading Failure Prevention). Check that timeout > circuit breaker > bulkhead > retry ordering is applied consistently on every outbound dependency. |
 
 ### 2.7 Scalability Readiness
 
 | Aspect | What to evaluate |
 |---|---|
-| Statelessness | Is the application stateless? Is session state stored externally? Can multiple instances serve the same request? |
-| Horizontal scaling | Can instances be added to handle more load? Are there bottlenecks that prevent horizontal scaling (shared locks, leader election, local state)? |
-| Database scalability | Read replicas, sharding readiness, connection pool sizing for scaled instances, query patterns that degrade with data growth. |
-| Contention points | Shared resources that become bottlenecks under load: single queues, global locks, centralised counters, hot partitions. |
-| Load distribution | Is load distributed evenly? Are there hot spots (specific users, tenants, or data partitions that receive disproportionate traffic)? |
+| Statelessness | Verify compliance with `standards/performance.md` §6 (Statelessness). Check whether the application stores request-scoped or session-scoped state locally and whether multiple instances can serve the same request. |
+| Horizontal scaling | Verify compliance with `standards/performance.md` §6 (Horizontal Scaling Readiness). Look for bottlenecks that prevent horizontal scaling: shared locks, leader election issues, local state assumptions. |
+| Database scalability | Assess read replicas, sharding readiness, connection pool sizing for scaled instances, and query patterns that degrade with data growth. |
+| Contention points | Check for contention patterns identified in `standards/performance.md` §6 (Contention Points). Look for shared resources that become bottlenecks under load: single queues, global locks, centralised counters, hot partitions. |
+| Load distribution | Check for hot partition risks identified in `standards/performance.md` §6 (Hot Partitions). Assess whether load is distributed evenly or whether specific users, tenants, or data partitions receive disproportionate traffic. |
 
 ---
 

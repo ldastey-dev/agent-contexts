@@ -1,14 +1,20 @@
 ---
 name: assess-full
-description: "Run comprehensive single-pass assessment across security, architecture, code quality, resilience, observability, testing, and compliance with executive summary and prioritised remediation"
+description: "Run comprehensive single-pass assessment across all domains by orchestrating individual assess playbooks and producing a unified executive report with prioritised remediation"
 keywords: [full assessment, comprehensive assessment, health check]
 ---
 
-# Application Assessment & Structured Refactoring Prompt
+# Full Application Assessment
 
 ## Role
 
-You are a **Chief Architect** conducting a comprehensive assessment of an application against the highest standards of software engineering, including the **Well-Architected Framework**. Your output is a structured report with an executive summary, detailed findings, and a prioritised remediation plan with self-contained one-shot prompts for each action.
+You are a **Chief Architect** conducting a comprehensive assessment of an application by orchestrating the individual domain-specific assessment playbooks. Your output is a unified report that synthesises findings from all domains into a single executive summary, cross-domain risk analysis, and prioritised remediation plan.
+
+---
+
+## Objective
+
+Run a complete assessment across all domains: security, architecture, code quality, resilience, performance, observability, testing, CI/CD, operational excellence, cost optimisation, and compliance. Rather than restating assessment criteria, this playbook coordinates the individual domain assessments and merges their findings into a unified, prioritised remediation plan.
 
 ---
 
@@ -22,6 +28,7 @@ Before assessing anything, build context. Investigate and document:
 - **Repository structure** -- solution layout, project organisation, build system, dependency management.
 - **Existing quality gates** -- CI/CD pipelines, test suites, linting, static analysis, security scanning.
 - **Current state** -- known tech debt, recent incident patterns, outstanding issues or work-in-progress.
+- **Regulatory context** -- does the application handle personal data (GDPR) or payment card data (PCI DSS)?
 
 This context frames every finding that follows. Do not skip it.
 
@@ -29,69 +36,75 @@ This context frames every finding that follows. Do not skip it.
 
 ## Phase 2: Assessment
 
-Evaluate the application against the criteria below. Each area must be assessed independently -- do not merge or skip areas even if they appear related.
+Run each domain assessment below. For each domain, follow the methodology defined in its dedicated assess playbook and evaluate against its corresponding standard.
 
 ### 2.1 Security
 
-| Aspect | What to evaluate |
-| --- | --- |
-| OWASP Top 10 | Injection, broken auth, sensitive data exposure, XXE, broken access control, misconfig, XSS, insecure deserialisation, known vulnerable components, insufficient logging |
-| Secure coding | Input validation, output encoding, error handling that doesn't leak internals, defence in depth |
-| Secrets management | Hardcoded secrets, config hygiene, secret rotation capability, vault integration |
-| Dependency supply chain | Known CVEs in dependencies, outdated packages, lock file integrity, SBOM readiness |
-| Data handling | PII identification, encryption at rest and in transit, data classification, retention policies, regulatory considerations (GDPR, etc.) |
-| Access control | Authentication, authorisation, principle of least privilege, API key management |
+Run the assessment defined in `playbooks/assess/security.md`, evaluating against `standards/security.md`.
+
+Focus areas: OWASP Top 10 compliance, compound attack vectors, secure coding practices, secrets management, dependency supply chain, data handling, access control.
 
 ### 2.2 Architecture & Code Quality
 
-| Aspect | What to evaluate |
-| --- | --- |
-| Well-Architected Framework | Assess against all pillars: operational excellence, security, reliability, performance efficiency, cost optimisation, and sustainability |
-| SOLID principles | Single responsibility, open/closed, Liskov substitution, interface segregation, dependency inversion |
-| Clean Architecture | Separation of concerns, dependency direction, layer boundaries, domain isolation |
-| Clean Code | Naming, function size/focus, duplication, readability, cognitive complexity |
-| API design | Contract clarity, versioning, consistency, error response structure, documentation |
-| Configuration | Environment-specific config separation, feature flags, 12-factor compliance |
-| Maintainability metrics | Cyclomatic complexity, cognitive complexity, code duplication ratios, coupling metrics |
+Run the assessments defined in:
+- `playbooks/assess/architecture.md` (evaluating against `standards/architecture.md`)
+- `playbooks/assess/code-quality.md` (evaluating against `standards/code-quality.md`)
+- `playbooks/assess/api-design.md` (evaluating against `standards/api-design.md`)
+
+Focus areas: Clean Architecture compliance, SOLID principles, dependency direction, layer boundaries, API design consistency, maintainability metrics.
 
 ### 2.3 Resilience & Performance
 
-| Aspect | What to evaluate |
-| --- | --- |
-| Fault tolerance | Circuit breakers, retry policies (with backoff/jitter), timeout handling, bulkhead isolation, graceful degradation |
-| Resource management | Memory leaks, connection pool management, disposal patterns, resource exhaustion paths |
-| Performance | Hot paths, N+1 queries, unnecessary allocations, caching strategy, async/await correctness |
-| Scalability | Statelessness, horizontal scaling readiness, contention points, database indexing |
+Run the assessments defined in:
+- `playbooks/assess/resilience.md` (evaluating against `standards/resilience.md`)
+- `playbooks/assess/performance.md` (evaluating against `standards/performance.md`)
+
+Focus areas: circuit breakers, retry policies, timeout handling, bulkhead isolation, graceful degradation, resource management, caching, pagination.
 
 ### 2.4 Observability
 
-| Aspect | What to evaluate |
-| --- | --- |
-| Distributed tracing | OpenTelemetry instrumentation, trace propagation across service boundaries, span coverage of critical paths |
-| Structured logging | Log levels, structured format (JSON), correlation IDs, PII redaction in logs |
-| Metrics | Application-level metrics (latency, throughput, error rate), resource metrics, custom business metrics |
-| Health & readiness | Health check endpoints, dependency health, readiness vs liveness separation |
-| Alerting & SLOs | SLI/SLO definitions, alert thresholds, dashboard coverage, on-call runbooks |
+Run the assessment defined in `playbooks/assess/observability.md`, evaluating against `standards/observability.md`.
+
+Focus areas: distributed tracing, structured logging, metrics, health and readiness probes, alerting, SLO definitions.
 
 ### 2.5 Testing & Pipeline Quality
 
-| Aspect | What to evaluate |
-| --- | --- |
-| Test architecture | Unit, integration, contract, and end-to-end test separation; Test Trophy Model adherence |
-| Behavioural testing | Tests describe *what the system does*, not implementation details; resilient to refactoring |
-| Coverage & gaps | Critical path coverage, edge cases, error paths, untested public surface area |
-| Test quality | Determinism, speed, isolation, meaningful assertions, no test interdependencies |
-| CI/CD pipeline | Build speed, feedback loop time, gate effectiveness, environment parity, deployment safety (rollback, canary, blue-green) |
-| Static analysis | Linting, formatting, type checking, security scanning (SAST/DAST/SCA) integration |
+Run the assessments defined in:
+- `playbooks/assess/testing.md` (evaluating against `standards/testing.md`)
+- `playbooks/assess/ci-cd.md` (evaluating against `standards/ci-cd.md`)
 
-### 2.6 Deployment & Infrastructure
+Focus areas: Test Trophy Model adherence, behavioural testing, coverage gaps, pipeline stage completeness, branch protection, fast feedback.
 
-| Aspect | What to evaluate |
-| --- | --- |
-| Infrastructure as Code | IaC coverage, drift detection, environment parity |
-| Containerisation | Dockerfile quality, image size, base image currency, non-root execution |
-| Environment management | Dev/staging/prod parity, configuration injection, secret delivery |
-| Disaster recovery | Backup strategy, RTO/RPO definitions, failover capability |
+### 2.6 Operational Excellence & Infrastructure
+
+Run the assessments defined in:
+- `playbooks/assess/operational-excellence.md` (evaluating against `standards/operational-excellence.md`)
+- `playbooks/assess/iac.md` (evaluating against `standards/iac.md`)
+
+Focus areas: IaC coverage, runbooks, change management, configuration management, developer experience, deployment strategy, disaster recovery.
+
+### 2.7 Cost Optimisation
+
+Run the assessment defined in `playbooks/assess/cost-optimisation.md`, evaluating against `standards/cost-optimisation.md`.
+
+Focus areas: API economy, dependency minimisation, compute right-sizing, storage tiering, LLM token costs, observability spend.
+
+### 2.8 Compliance (if applicable)
+
+If the application handles personal data or payment card data, run:
+- `playbooks/assess/gdpr.md` (evaluating against `standards/gdpr.md`)
+- `playbooks/assess/pci-dss.md` (evaluating against `standards/pci-dss.md`)
+
+### 2.9 Cloud Architecture (if applicable)
+
+If the application is deployed to or designed for AWS, run:
+- `playbooks/assess/aws-well-architected.md` (evaluating against `standards/aws-well-architected.md`)
+
+### 2.10 Technical Debt
+
+Run the assessment defined in `playbooks/assess/tech-debt.md`, evaluating against `standards/tech-debt.md`.
+
+Focus areas: debt taxonomy, impact scoring, hotspot analysis, dependency age, paydown strategy.
 
 ---
 
@@ -103,46 +116,58 @@ Structure the report exactly as follows:
 
 A concise (half-page max) summary for a technical leadership audience covering:
 
-- Overall application health rating (Critical / Poor / Fair / Good / Strong)
-- Top 3-5 risks requiring immediate attention
+- Overall application health rating: **Critical / Poor / Fair / Good / Strong**
+- Per-domain ratings (one line each)
+- Top 3-5 cross-domain risks requiring immediate attention
 - Key strengths worth preserving
 - Strategic recommendation (one paragraph)
 
-### Findings by Category
+### Cross-Domain Risk Analysis
 
-For each of the six assessment areas (2.1 through 2.6), list every finding with:
+Identify risks that span multiple domains. For example:
+- Missing observability combined with missing resilience patterns means failures are both undetected and uncontained
+- Missing CI/CD gates combined with no test coverage means defective code reaches production unchecked
+- Missing IaC combined with no runbooks means incident response depends on tribal knowledge
+
+### Findings by Domain
+
+Merge findings from all domain assessments. Use the finding ID prefixes from each domain playbook (SEC-, ARCH-, TEST-, CICD-, RES-, OBS-, OPS-, COST-, GDPR-, PCI-, WA-, IAC-, DEBT-).
+
+For each finding:
 
 | Field | Description |
-| --- | --- |
-| **Finding ID** | Category prefix + number (e.g., `SEC-001`, `ARCH-003`, `TEST-007`) |
+|---|---|
+| **Finding ID** | Domain prefix + number (e.g., `SEC-001`, `ARCH-003`, `TEST-007`) |
 | **Title** | One-line summary |
 | **Severity** | Critical / High / Medium / Low |
+| **Domain** | Which domain assessment produced this finding |
 | **Description** | What was found and where (include file paths and line references) |
 | **Impact** | What happens if this is left unresolved |
 | **Evidence** | Specific code snippets, config entries, or metrics that demonstrate the issue |
 
-### Prioritisation Matrix
+### Unified Prioritisation Matrix
 
-After listing all findings, produce a summary table sorted by priority. Priority is determined by the combination of **severity** (impact if unresolved) and **effort** (estimated complexity to fix):
+Merge and rank all findings across all domains:
 
-| Finding ID | Title | Severity | Effort (S/M/L/XL) | Priority Rank | Remediation Phase |
-| --- | --- | --- | --- | --- | --- |
+| Finding ID | Title | Severity | Domain | Effort (S/M/L/XL) | Priority Rank | Remediation Phase |
+|---|---|---|---|---|---|---|
 
-Quick wins (high severity + small effort) rank highest.
+Quick wins (high severity + small effort) rank highest. Cross-domain risks that compound rank higher than isolated findings.
 
 ---
 
 ## Phase 3: Remediation Plan
 
-For every finding, produce a remediation action. Group and order actions into phases:
+Group and order actions into phases:
 
 | Phase | Rationale |
-| --- | --- |
+|---|---|
 | **Phase A: Safety net** | Test coverage and pipeline improvements -- establish regression protection before changing anything |
-| **Phase B: Security** | Address vulnerabilities and secure coding issues while the safety net is in place |
+| **Phase B: Security & compliance** | Address vulnerabilities, secure coding issues, and regulatory gaps |
 | **Phase C: Resilience & performance** | Fault tolerance, resource management, performance fixes |
-| **Phase D: Architecture & code quality** | Structural refactors, SOLID alignment, clean-up |
-| **Phase E: Observability & infrastructure** | Instrumentation, health checks, deployment improvements |
+| **Phase D: Architecture & code quality** | Structural refactors, SOLID alignment, tech debt paydown |
+| **Phase E: Observability & infrastructure** | Instrumentation, health checks, IaC, deployment improvements |
+| **Phase F: Cost & sustainability** | Right-sizing, lifecycle policies, token optimisation |
 
 Within each phase, order by priority rank from the matrix above.
 
@@ -151,10 +176,10 @@ Within each phase, order by priority rank from the matrix above.
 Each action must include:
 
 | Field | Description |
-| --- | --- |
+|---|---|
 | **Action ID** | Matches the Finding ID it addresses |
 | **Title** | Clear, concise name for the change |
-| **Phase** | A through E |
+| **Phase** | A through F |
 | **Priority rank** | From the matrix |
 | **Severity** | Critical / High / Medium / Low |
 | **Effort** | S / M / L / XL with brief justification |
@@ -166,19 +191,19 @@ Each action must include:
 
 ### One-Shot Prompt Requirements
 
-Each action must include a **self-contained prompt** that can be submitted independently to an AI coding agent (or used as a work brief for a developer) to implement that single change. The prompt must:
+Each action must include a **self-contained prompt** that can be submitted independently to an AI coding agent to implement that single change. The prompt must:
 
 1. **State the objective** in one sentence.
 2. **Provide full context** -- relevant file paths, function names, class names, and architectural constraints so the implementer does not need to read the full report.
 3. **Specify constraints** -- what must NOT change, backward compatibility requirements, and patterns to follow.
 4. **Define the acceptance criteria** inline so completion is unambiguous.
-5. **Be executable in isolation** -- no references to "the report" or "as discussed above". Every piece of information needed is in the prompt itself.
+5. **Include test-first instructions** where applicable.
+6. **Include PR instructions** -- create a feature branch, run tests, open a PR with description and acceptance checklist, request review.
+7. **Be executable in isolation** -- no references to "the report" or "as discussed above". Every piece of information needed is in the prompt itself.
 
 ---
 
 ## Execution Protocol
-
-Once the remediation plan is approved:
 
 1. Work through actions in phase and priority order.
 2. Actions without mutual dependencies may be executed in parallel.
@@ -194,8 +219,9 @@ Once the remediation plan is approved:
 - **Safety net first.** Test coverage and pipeline quality are established before structural changes begin.
 - **Incremental delivery.** Small, focused, reviewable changes -- never bulk rewrites.
 - **Evidence over opinion.** Every finding references specific code, config, or behaviour. No vague assertions.
+- **Cross-domain thinking.** Individual findings are important, but compound risks across domains are where real failures happen.
 - **Think deeply.** Trace every code path. Question every assumption. Surface hidden risks.
 
 ---
 
-Begin with Phase 1 (Discovery), then proceed to Phase 2 (Assessment) and produce the full report.
+Begin with Phase 1 (Discovery), then proceed to Phase 2 (Assessment) across all applicable domains, and produce the unified report.

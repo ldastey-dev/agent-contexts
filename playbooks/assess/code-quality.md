@@ -45,47 +45,47 @@ Evaluate the application against each criterion below. Assess each area independ
 
 | Aspect | What to evaluate |
 |---|---|
-| Class responsibility | Does each class have one reason to change? Or do classes mix concerns (e.g., a controller that contains business logic, data access, and validation)? |
-| Method responsibility | Does each method do one thing? Or do methods have multiple responsibilities chained together? |
-| God classes | Identify classes that are excessively large or have too many dependencies -- these almost always violate Single Responsibility. |
-| God methods | Identify methods that are excessively long, have deep nesting, or contain multiple levels of abstraction. |
-| Change analysis | When a requirement changes, how many classes need to be modified? High fan-out on changes indicates Single Responsibility violations. |
+| Class responsibility | Verify class cohesion complies with `standards/code-quality.md` §1 (Single Responsibility Principle). Check whether each class has one reason to change, or mixes concerns (e.g., a controller that contains business logic, data access, and validation). |
+| Method responsibility | Verify method focus complies with `standards/code-quality.md` §1 (Single Responsibility Principle). Apply the litmus test: can each method be described without the word "and"? |
+| God classes | Identify classes that are excessively large or have too many dependencies. Check class and file size against `standards/code-quality.md` §3 (Complexity Thresholds). These almost always violate Single Responsibility. |
+| God methods | Identify methods that are excessively long, have deep nesting, or contain multiple levels of abstraction. Check against the function length and nesting depth limits in `standards/code-quality.md` §3 (Complexity Thresholds). |
+| Change analysis | Assess change concentration: when a requirement changes, how many classes need modification? High fan-out on changes indicates Single Responsibility violations. |
 
 #### Open/Closed Principle
 
 | Aspect | What to evaluate |
 |---|---|
-| Extension patterns | Can new behaviour be added without modifying existing code? Are there strategy patterns, plugins, or composition roots? |
-| Switch/if-else chains | Long conditional chains on type or status often indicate missing polymorphism or strategy pattern. |
-| Modification history | Do the same files get modified for every new feature? This indicates they're not closed for modification. |
-| Configuration-driven behaviour | Is behaviour configurable without code changes where appropriate? |
+| Extension patterns | Verify extension approach complies with `standards/code-quality.md` §1 (Open/Closed Principle). Check whether new behaviour can be added without modifying existing code — look for strategy patterns, plugins, or composition roots. |
+| Switch/if-else chains | Check for long conditional chains on type or status that indicate missing polymorphism or strategy pattern per `standards/code-quality.md` §1 (Open/Closed Principle). |
+| Modification history | Check version control to see whether the same files are modified for every new feature — this indicates they are not closed for modification. |
+| Configuration-driven behaviour | Check whether behaviour is configurable without code changes where appropriate, using maps, registries, or strategy patterns per `standards/code-quality.md` §1 (Open/Closed Principle). |
 
 #### Liskov Substitution Principle
 
 | Aspect | What to evaluate |
 |---|---|
-| Inheritance correctness | Can derived classes be used interchangeably with their base classes without breaking behaviour? |
-| Contract violations | Do subclasses throw unexpected exceptions, ignore base class contracts, or have strengthened preconditions? |
-| Interface implementation | Do all implementations of an interface fulfil the full contract, or do some throw NotImplementedException or return null for unsupported operations? |
-| Type checking abuse | Are there instanceof/is/typeof checks that switch on concrete types? This often signals Liskov Substitution violations. |
+| Inheritance correctness | Verify inheritance complies with `standards/code-quality.md` §1 (Liskov Substitution Principle). Check that derived classes can be used interchangeably with their base classes without breaking behaviour. |
+| Contract violations | Check for subclasses that throw unexpected exceptions, ignore base class contracts, or have strengthened preconditions per `standards/code-quality.md` §1 (Liskov Substitution Principle). |
+| Interface implementation | Check whether all implementations of an interface fulfil the full contract, or whether some throw NotImplementedException or return null for unsupported operations. |
+| Type checking abuse | Check for instanceof/is/typeof checks that switch on concrete types — this often signals Liskov Substitution violations. |
 
 #### Interface Segregation Principle
 
 | Aspect | What to evaluate |
 |---|---|
-| Interface size | Are interfaces focused and cohesive, or are they large with many methods that not all implementers need? |
-| Forced implementations | Do implementers have to provide empty or throwing implementations for interface methods they don't use? |
-| Client coupling | Are clients forced to depend on methods they don't call? |
-| Role interfaces | Are interfaces designed around client needs (role interfaces) rather than implementer convenience? |
+| Interface size | Verify interface cohesion complies with `standards/code-quality.md` §1 (Interface Segregation Principle). Check for large interfaces with many methods that not all implementers need. |
+| Forced implementations | Check for implementers that provide empty or throwing implementations for interface methods they do not use. |
+| Client coupling | Check whether clients are forced to depend on methods they do not call. |
+| Role interfaces | Assess whether interfaces are designed around client needs (role interfaces) rather than implementer convenience. |
 
 #### Dependency Inversion Principle
 
 | Aspect | What to evaluate |
 |---|---|
-| Dependency direction | Do high-level modules depend on abstractions, or directly on low-level implementations? |
-| Concrete instantiation | Are concrete classes instantiated directly where they're used (new), or injected via abstractions? |
-| Infrastructure leakage | Do domain or application layer classes reference infrastructure concerns (specific database libraries, HTTP clients, file system)? |
-| Abstraction quality | Are abstractions meaningful (representing behaviour contracts) or trivial (1:1 wrappers around a single implementation)? |
+| Dependency direction | Verify dependency direction complies with `standards/code-quality.md` §1 (Dependency Inversion Principle) and §4.1 (Dependency Direction). Check that high-level modules depend on abstractions, not directly on low-level implementations. |
+| Concrete instantiation | Check for concrete classes instantiated directly where they are used (`new`), rather than injected via abstractions per `standards/code-quality.md` §1 (Dependency Inversion Principle). |
+| Infrastructure leakage | Verify layer separation complies with `standards/code-quality.md` §4.2 (Separation of Concerns). Check whether domain or application layer classes reference infrastructure concerns (specific database libraries, HTTP clients, file system). |
+| Abstraction quality | Assess whether abstractions are meaningful (representing behaviour contracts) or trivial (1:1 wrappers around a single implementation). |
 
 ### 2.2 Clean Code Practices
 
@@ -93,59 +93,59 @@ Evaluate the application against each criterion below. Assess each area independ
 
 | Aspect | What to evaluate |
 |---|---|
-| Intention-revealing names | Do variable, method, and class names clearly communicate purpose and intent? |
-| Consistent vocabulary | Is the same concept always referred to by the same name across the codebase? Or do synonyms create confusion (e.g., fetch/get/retrieve/load for the same operation)? |
-| Naming conventions | Are naming conventions consistent with language idioms (camelCase, PascalCase, snake_case as appropriate)? |
-| Abbreviations | Are abbreviations avoided except for universally understood ones? No cryptic shortened names? |
-| Domain language | Does the code use ubiquitous language from the business domain? |
+| Intention-revealing names | Verify naming complies with `standards/code-quality.md` §2.1 (Naming). Check that variable, method, and class names clearly communicate purpose and intent. |
+| Consistent vocabulary | Check whether the same concept is always referred to by the same name across the codebase. Flag synonyms that create confusion (e.g., fetch/get/retrieve/load for the same operation). |
+| Naming conventions | Verify naming conventions comply with `standards/code-quality.md` §2.1 (Naming). Check consistency with language idioms (camelCase, PascalCase, snake_case as appropriate). |
+| Abbreviations | Check for abbreviations beyond the universally understood ones permitted in `standards/code-quality.md` §2.1 (Naming) (`id`, `url`, `config`, `db`). |
+| Domain language | Check whether the code uses ubiquitous language from the business domain. |
 
 #### Functions and Methods
 
 | Aspect | What to evaluate |
 |---|---|
-| Size and focus | Are functions short and focused on a single task? Or are there functions spanning hundreds of lines? |
-| Abstraction level | Does each function operate at a single level of abstraction? Or does it mix high-level orchestration with low-level detail? |
-| Parameter count | Are parameter lists short (ideally 0-3)? Long parameter lists suggest the function does too much or a parameter object is needed. |
-| Side effects | Are side effects explicit and expected? Or do functions have hidden side effects that surprise callers? |
-| Command-query separation | Do functions either perform an action (command) or return data (query), but not both? |
+| Size and focus | Verify function size complies with `standards/code-quality.md` §2.2 (Functions) and §3 (Complexity Thresholds). Check for functions exceeding the specified length guideline. |
+| Abstraction level | Verify abstraction mixing complies with `standards/code-quality.md` §2.2 (Functions). Check that each function operates at a single level of abstraction without mixing orchestration with low-level detail. |
+| Parameter count | Verify parameter counts comply with `standards/code-quality.md` §2.2 (Functions) and §3 (Complexity Thresholds). Check public functions against the specified maximum and flag where parameter objects are needed. |
+| Side effects | Verify side effect discipline complies with `standards/code-quality.md` §2.2 (Functions). Check that side effects are explicit and expected, with no hidden mutations that surprise callers. |
+| Command-query separation | Check whether functions either perform an action (command) or return data (query), but not both. |
 
 #### Duplication
 
 | Aspect | What to evaluate |
 |---|---|
-| Copy-paste code | Identify exact or near-exact code duplications. Every duplication is a missed abstraction. |
-| Structural duplication | Similar patterns repeated with slight variations -- could be addressed with templates, generics, or strategy pattern. |
-| Knowledge duplication | The same business rule encoded in multiple places. Changes require updating multiple locations. |
-| Test duplication | Excessive setup/teardown duplication in tests that could be extracted to helpers or fixtures. |
+| Copy-paste code | Identify exact or near-exact code duplications. Per `standards/code-quality.md` §5 (Non-Negotiables, rule 6), duplication appearing three or more times is a hard defect. |
+| Structural duplication | Identify similar patterns repeated with slight variations that could be addressed with templates, generics, or strategy pattern. |
+| Knowledge duplication | Identify the same business rule encoded in multiple places, requiring updates in multiple locations. |
+| Test duplication | Identify excessive setup/teardown duplication in tests that could be extracted to helpers or fixtures. |
 
 #### Readability and Cognitive Complexity
 
 | Aspect | What to evaluate |
 |---|---|
-| Cognitive complexity | How much mental effort is required to understand each function? Deep nesting, complex conditionals, and interleaved logic increase cognitive load. |
-| Code flow | Can you read the code top-to-bottom and understand what it does? Or does it require jumping between many files and abstractions? |
-| Comments | Are comments explaining *why* (good) or *what* (usually indicates the code isn't clear enough)? Are there outdated or misleading comments? |
-| Dead code | Commented-out code, unused methods, unreachable branches, unused imports. |
-| Magic values | Hardcoded numbers, strings, or config values without explanation or named constants. |
+| Cognitive complexity | Verify cognitive complexity complies with `standards/code-quality.md` §3 (Complexity Thresholds). Measure the mental effort required to understand each function and flag those exceeding the specified limit. |
+| Code flow | Assess whether code can be read top-to-bottom without jumping between many files and abstractions. |
+| Comments | Verify comment usage complies with `standards/code-quality.md` §2.3 (Comments). Check whether comments explain *why* (appropriate) or *what* (indicates unclear code). Flag outdated or misleading comments. |
+| Dead code | Check for violations of `standards/code-quality.md` §5 (Non-Negotiables, rule 1). Identify commented-out code, unused methods, unreachable branches, and unused imports. |
+| Magic values | Check for violations of `standards/code-quality.md` §5 (Non-Negotiables, rule 2). Identify hardcoded numbers, strings, or config values without named constants. |
 
 ### 2.3 Maintainability Metrics
 
 | Metric | What to evaluate |
 |---|---|
-| Cyclomatic complexity | Functions/methods with complexity > 10 are candidates for refactoring. > 20 is a strong signal. |
-| Cognitive complexity | More nuanced than cyclomatic -- measures how hard code is to understand. Flag high scores. |
-| Class coupling | Classes with many dependencies (fan-in/fan-out). High coupling makes changes risky and testing difficult. |
-| Duplication ratio | Percentage of duplicated code. Industry baseline is < 5%. |
-| Method/class size | Excessively long methods or classes. Flag specific thresholds appropriate to the language. |
+| Cyclomatic complexity | Measure cyclomatic complexity per function against the limit in `standards/code-quality.md` §3 (Complexity Thresholds). Flag functions exceeding the threshold. |
+| Cognitive complexity | Measure cognitive complexity per function against the limit in `standards/code-quality.md` §3 (Complexity Thresholds). Flag functions exceeding the threshold. |
+| Class coupling | Identify classes with many dependencies (fan-in/fan-out). High coupling makes changes risky and testing difficult. |
+| Duplication ratio | Measure the percentage of duplicated code. Flag against industry baseline of < 5%. |
+| Method/class size | Measure method and class sizes against the guidelines in `standards/code-quality.md` §3 (Complexity Thresholds). Flag specific violations appropriate to the language. |
 
 ### 2.4 Design Patterns and Anti-Patterns
 
 | Aspect | What to evaluate |
 |---|---|
-| Appropriate patterns | Are design patterns used where they solve a real problem? Or are they applied unnecessarily (over-engineering)? |
-| Missing patterns | Are there places where a well-known pattern would simplify the code (strategy, factory, observer, decorator)? |
-| Anti-patterns | Service locator, God object, anaemic domain model, golden hammer, premature abstraction, feature envy, data class with separate logic class. |
-| Framework misuse | Is the framework being used as intended, or fought against? |
+| Appropriate patterns | Check whether design patterns are used where they solve a real problem, or applied unnecessarily (over-engineering). |
+| Missing patterns | Identify places where a well-known pattern would simplify the code (strategy, factory, observer, decorator). |
+| Anti-patterns | Identify anti-patterns: service locator, God object, anaemic domain model, golden hammer, premature abstraction, feature envy, data class with separate logic class. |
+| Framework misuse | Check whether the framework is being used as intended, or fought against. |
 
 ---
 

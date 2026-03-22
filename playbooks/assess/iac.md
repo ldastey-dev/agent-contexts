@@ -46,82 +46,82 @@ Evaluate the infrastructure against each criterion below. Assess each area indep
 
 | Aspect | What to evaluate |
 |---|---|
-| Coverage | What percentage of infrastructure is defined in code? Identify any manually provisioned (ClickOps) resources. |
-| Declarative vs imperative | Is IaC declarative (desired state) or imperative (scripts)? Declarative is strongly preferred. |
-| State management | How is IaC state managed? Remote state with locking? State file security? State backup? |
-| Modularity | Are IaC definitions modular and reusable? Or are they monolithic copy-paste across environments? |
-| DRY principle | Is there duplication across environment definitions? Are modules/templates used to share common infrastructure? |
-| Naming conventions | Are resources named consistently and meaningfully? Is there a tagging strategy? |
-| Documentation | Are infrastructure decisions documented? Are there architecture diagrams that match reality? |
-| Version pinning | Are provider versions, module versions, and tool versions pinned? Are there lock files? |
+| Coverage | Evaluate IaC coverage against the requirements in `standards/iac.md` §1.1 (Coverage). Identify any manually provisioned resources that violate the no-ClickOps rule. |
+| Declarative vs imperative | Determine whether IaC is declarative (desired state) or imperative (scripts). Evaluate against the declarative preference in `standards/iac.md` §1.2 (Declarative Over Imperative). |
+| State management | Assess how IaC state is managed -- remote backend, locking, encryption, backup. Evaluate against `standards/iac.md` §1.3 (State Management). |
+| Modularity | Determine whether IaC definitions are modular and reusable or monolithic copy-paste across environments. Evaluate against `standards/iac.md` §1.4 (Modularity & DRY). |
+| DRY principle | Identify duplication across environment definitions. Check whether modules or templates are used to share common infrastructure per `standards/iac.md` §1.4 (Modularity & DRY). |
+| Naming conventions | Assess resource naming consistency and tagging strategy against `standards/iac.md` §1.5 (Naming Conventions). |
+| Documentation | Determine whether infrastructure decisions are documented and architecture diagrams match reality. |
+| Version pinning | Check whether provider, module, and tool versions are pinned with lock files committed. Evaluate against `standards/iac.md` §1.6 (Version Pinning). |
 
 ### 2.2 IaC Testing & Validation
 
 | Aspect | What to evaluate |
 |---|---|
-| Plan/preview | Is there a plan/preview step before applying changes? Is it reviewed? |
-| Linting | Are IaC files linted (tflint, checkov, cfn-lint)? Is linting gating in CI? |
-| Security scanning | Are IaC definitions scanned for security issues (tfsec, checkov, Bridgecrew, Snyk IaC)? |
-| Policy as code | Are guardrails enforced via policy (OPA, Sentinel, Azure Policy, AWS SCP)? |
-| Integration tests | Are infrastructure changes tested in a temporary environment before promotion? |
-| Drift detection | Is there automated detection of configuration drift between IaC and actual state? How is drift resolved? |
+| Plan/preview | Check whether a plan/preview step runs before applying changes and whether output is reviewed. Evaluate against `standards/iac.md` §2.1 (Plan Before Apply). |
+| Linting | Determine whether IaC files are linted with appropriate tools and whether linting gates CI. Evaluate against `standards/iac.md` §2.2 (Linting). |
+| Security scanning | Assess whether IaC definitions are scanned for security misconfigurations with gating enforcement. Evaluate against `standards/iac.md` §2.3 (Security Scanning). |
+| Policy as code | Determine whether organisational guardrails are enforced programmatically. Evaluate against `standards/iac.md` §2.4 (Policy as Code). |
+| Integration tests | Check whether infrastructure changes are tested in ephemeral environments before promotion. Evaluate against `standards/iac.md` §2.5 (Integration Tests). |
+| Drift detection | Assess whether automated drift detection exists and how drift is resolved. Evaluate against `standards/iac.md` §2.6 (Drift Detection). |
 
 ### 2.3 Containerisation
 
 | Aspect | What to evaluate |
 |---|---|
-| Dockerfile quality | Multi-stage builds, minimal base images, layer optimisation, .dockerignore usage |
-| Image size | Are images bloated with unnecessary tools, build dependencies, or development packages? |
-| Base image currency | Are base images up-to-date? Are they pinned to specific versions (not `latest`)? |
-| Security | Non-root execution, no secrets in images, vulnerability scanning (Trivy, Snyk Container), read-only filesystem where possible |
-| Build reproducibility | Are builds deterministic? Same commit produces same image? |
-| Registry management | Private registry, image signing, tag immutability, retention policies |
-| Health checks | Are container health checks defined? Do they accurately reflect application readiness? |
+| Dockerfile quality | Review for multi-stage builds, minimal base images, layer optimisation, and `.dockerignore` usage. Evaluate against `standards/iac.md` §3.1 (Image Build Quality). |
+| Image size | Determine whether images are bloated with unnecessary tools, build dependencies, or development packages. Check final-stage composition against `standards/iac.md` §3.1 requirements. |
+| Base image currency | Check whether base images are up-to-date and pinned to specific versions. Evaluate against `standards/iac.md` §3.3 (Base Image Management). |
+| Security | Assess non-root execution, secret absence in images, vulnerability scanning, and read-only filesystem usage. Evaluate against `standards/iac.md` §3.2 (Image Security). |
+| Build reproducibility | Determine whether the same commit produces a functionally identical image. Evaluate against `standards/iac.md` §3.4 (Build Reproducibility). |
+| Registry management | Review private registry usage, image signing, tag immutability, and retention policies. Evaluate against `standards/iac.md` §3.5 (Registry Management). |
+| Health checks | Assess whether container health checks are defined and accurately reflect application readiness. Evaluate against `standards/iac.md` §3.6 (Health Checks). |
 
 ### 2.4 Environment Management
 
 | Aspect | What to evaluate |
 |---|---|
-| Environment parity | How similar are dev, staging, and production? Are there divergences that cause "works on staging" issues? |
-| Environment provisioning | Can a new environment be provisioned from scratch automatically? How long does it take? |
-| Configuration injection | How is environment-specific configuration delivered? Environment variables, config maps, parameter store? |
-| Secret delivery | How do secrets reach the application at runtime? Are they injected securely (not baked into images or config files)? |
-| Data management | How is test data managed? Is production data ever used in non-production environments (PII risk)? |
-| Environment lifecycle | Are temporary/preview environments used for PRs? Are idle environments cleaned up? |
+| Environment parity | Assess how similar dev, staging, and production are. Identify divergences that cause cross-environment failures. Evaluate against `standards/iac.md` §4.1 (Environment Parity). |
+| Environment provisioning | Determine whether a new environment can be provisioned from scratch automatically and how long it takes. Evaluate against `standards/iac.md` §4.2 (Automated Provisioning). |
+| Configuration injection | Review how environment-specific configuration is delivered. Evaluate against `standards/iac.md` §4.3 (Configuration Injection). |
+| Secret delivery | Assess how secrets reach the application at runtime. Evaluate against `standards/iac.md` §4.4 (Secure Secret Delivery). |
+| Data management | Determine how test data is managed and whether production data exists in non-production environments. Evaluate against `standards/iac.md` §4.5 (Test Data Management). |
+| Environment lifecycle | Check whether preview/ephemeral environments are used for PRs and whether idle environments are cleaned up. Evaluate against `standards/iac.md` §4.6 (Environment Lifecycle). |
 
 ### 2.5 Deployment Strategy
 
 | Aspect | What to evaluate |
 |---|---|
-| Deployment method | Rolling, blue-green, canary, recreate? Is the strategy appropriate for the application? |
-| Rollback capability | Can deployments be rolled back quickly? Is this automated or manual? Has it been tested? |
-| Zero-downtime | Can the application be deployed without downtime? Are database migrations backward-compatible? |
-| Deployment frequency | How often can/does the team deploy? What bottlenecks exist? |
-| GitOps | Is the deployment state managed declaratively in git? Is there a reconciliation loop? |
-| Progressive delivery | Are feature flags, canary releases, or traffic shifting used to reduce blast radius? |
-| Deployment gates | Are there automated gates (tests, security scans, approval) before production deployment? |
+| Deployment method | Identify the deployment strategy (rolling, blue-green, canary, recreate) and assess whether it is appropriate. Evaluate against `standards/iac.md` §5.1 (Deployment Method). |
+| Rollback capability | Determine whether deployments can be rolled back quickly, whether rollback is automated, and whether it has been tested. Evaluate against `standards/iac.md` §5.2 (Rollback Capability). |
+| Zero-downtime | Assess whether the application can be deployed without downtime and whether database migrations are backward-compatible. Evaluate against `standards/iac.md` §5.3 (Zero-Downtime Deployments). |
+| Deployment frequency | Measure how often the team can and does deploy. Identify bottlenecks. |
+| GitOps | Determine whether deployment state is managed declaratively in git with a reconciliation loop. Evaluate against `standards/iac.md` §5.4 (GitOps). |
+| Progressive delivery | Assess whether feature flags, canary releases, or traffic shifting are used to reduce blast radius. Evaluate against `standards/iac.md` §5.5 (Progressive Delivery). |
+| Deployment gates | Check whether automated gates (tests, security scans, approval) exist before production deployment. Evaluate against `standards/iac.md` §5.6 (Deployment Gates). |
 
 ### 2.6 Disaster Recovery & Business Continuity
 
 | Aspect | What to evaluate |
 |---|---|
-| Backup strategy | What is backed up? How frequently? Are backups tested? Where are backups stored (cross-region, cross-account)? |
-| RTO/RPO definitions | Are Recovery Time Objective and Recovery Point Objective defined and documented? |
-| Failover capability | Can the application fail over to another region/zone? Is this automated or manual? Has it been tested? |
-| Runbooks | Are there documented procedures for common failure scenarios? Are they up-to-date and tested? |
-| Chaos engineering | Is there any practice of deliberately introducing failures to test resilience? |
-| Data recovery | Can specific data be recovered (point-in-time, item-level)? Has this been tested? |
+| Backup strategy | Review what is backed up, how frequently, whether backups are tested, and where they are stored. Evaluate against `standards/iac.md` §6.1 (Backup Strategy). |
+| RTO/RPO definitions | Determine whether Recovery Time Objective and Recovery Point Objective are defined, documented, and validated. Evaluate against `standards/iac.md` §6.2 (RTO and RPO). |
+| Failover capability | Assess whether the application can fail over to another region/zone, whether failover is automated, and whether it has been tested. Evaluate against `standards/iac.md` §6.3 (Failover Capability). |
+| Runbooks | Review documented procedures for common failure scenarios. Assess currency and test status. Evaluate against `standards/iac.md` §6.4 (DR Runbooks). |
+| Chaos engineering | Determine whether deliberate failure injection is practised to test resilience. Evaluate against `standards/iac.md` §6.5 (Chaos Engineering). |
+| Data recovery | Assess whether point-in-time and item-level data recovery is possible and tested. Evaluate against `standards/iac.md` §6.6 (Data Recovery). |
 
 ### 2.7 Cost Management
 
 | Aspect | What to evaluate |
 |---|---|
-| Resource tagging | Are all resources tagged for cost allocation, ownership, and environment? |
-| Right-sizing | Are resources appropriately sized for their workload? Are there over-provisioned instances? |
-| Reserved/committed use | Are predictable workloads covered by reserved instances or committed use discounts? |
-| Waste identification | Idle resources, unused storage, orphaned disks, unattached IPs, stale snapshots |
-| Cost alerting | Are budget alerts configured? Is cost reviewed regularly? |
-| Scale-to-zero | Can non-production environments scale to zero when not in use? |
+| Resource tagging | Check whether all resources are tagged for cost allocation, ownership, and environment. Evaluate against `standards/iac.md` §7.1 (Resource Tagging). |
+| Right-sizing | Determine whether resources are appropriately sized for their workload. Identify over-provisioned instances. Evaluate against `standards/iac.md` §7.2 (Right-Sizing). |
+| Reserved/committed use | Assess whether predictable workloads are covered by reserved instances or committed use discounts. Evaluate against `standards/iac.md` §7.3 (Reserved and Committed Use). |
+| Waste identification | Identify idle resources, unused storage, orphaned disks, unattached IPs, and stale snapshots. Evaluate against `standards/iac.md` §7.4 (Waste Identification). |
+| Cost alerting | Check whether budget alerts are configured and reviewed regularly. Evaluate against `standards/iac.md` §7.5 (Cost Alerting). |
+| Scale-to-zero | Determine whether non-production environments can scale to zero when not in use. Evaluate against `standards/iac.md` §7.6 (Scale-to-Zero). |
 
 ---
 
