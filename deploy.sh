@@ -275,7 +275,7 @@ interactive_select_agents() {
 }
 
 normalise_agents() {
-  local -A seen=()
+  local seen=""
   local agent
 
   for agent in "${SELECTED_AGENTS[@]}"; do
@@ -285,10 +285,14 @@ normalise_agents() {
         return 0
         ;;
       claude|copilot|cursor|devin|windsurf)
-        if [[ -z "${seen[$agent]+x}" ]]; then
-          ENABLED_AGENTS+=("$agent")
-          seen[$agent]=1
-        fi
+        case ",$seen," in
+          *",$agent,"*)
+            ;;
+          *)
+            ENABLED_AGENTS+=("$agent")
+            seen="${seen:+$seen,}$agent"
+            ;;
+        esac
         ;;
       *)
         echo "Error: unsupported agent '$agent'." >&2
@@ -437,8 +441,18 @@ if [[ -z "$TARGET" ]]; then
 fi
 
 if [[ ! -d "$TARGET" ]]; then
-  echo "Error: '$TARGET' is not a directory" >&2
-  exit 1
+  printf "Directory '%s' does not exist. Create it? [y/N] " "$TARGET"
+  read -r answer
+  case "$answer" in
+    [yY]|[yY][eE][sS])
+      mkdir -p "$TARGET"
+      echo "Created '$TARGET'"
+      ;;
+    *)
+      echo "Aborted." >&2
+      exit 1
+      ;;
+  esac
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
