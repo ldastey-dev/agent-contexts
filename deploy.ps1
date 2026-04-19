@@ -15,23 +15,34 @@
 .PARAMETER TargetRepo
     Target repository path. Defaults to the current directory.
 
+.PARAMETER Overwrite
+    Overwrite all existing files without prompting.
+
+.PARAMETER NoOverwrite
+    Skip all existing files without prompting.
+
 .EXAMPLE
     .\deploy.ps1 -Agents claude,copilot
     .\deploy.ps1 -Agents all -TargetRepo C:\repos\my-project
     .\deploy.ps1
+    .\deploy.ps1 -Agents all -TargetRepo C:\repos\my-project -NoOverwrite
 #>
 [CmdletBinding()]
 param(
     [ValidateSet('claude', 'copilot', 'cursor', 'devin', 'windsurf', 'all')]
     [string[]]$Agents,
     [string]$TargetRepo,
-    [switch]$Help
+    [switch]$Help,
+    [switch]$Overwrite,
+    [switch]$NoOverwrite
 )
 
 $ErrorActionPreference = 'Stop'
 
 $ValidAgents = @('claude', 'copilot', 'cursor', 'devin', 'windsurf')
 $script:EnabledAgents = @()
+$script:OverwriteMode = ""    # "all" | "none" | "" (prompt per-file)
+$script:SkippedFiles = @()
 
 # ---------------------------------------------------------------------------
 # Helper functions
@@ -62,6 +73,9 @@ Parameters:
   -Agents      Mandatory in non-interactive mode. Accepts one or more values:
                claude copilot cursor devin windsurf all
   -TargetRepo  Target directory (default: current directory)
+  -Overwrite     Overwrite all existing files without prompting
+  -NoOverwrite   Skip all existing files without prompting
+                 Default: prompt per-file when conflicts are detected
   -Help        Show this help message and exit
 "@
 }
@@ -87,8 +101,52 @@ function Test-AgentEnabled {
     return ($script:EnabledAgents -contains $Agent)
 }
 
+function Confirm-Overwrite {
+    param([string]$Destination)
+
+    # New files always proceed
+    if (-not (Test-Path $Destination)) {
+        return $true
+    }
+
+    switch ($script:OverwriteMode) {
+        "all"  { return $true }
+        "none" {
+            $script:SkippedFiles += $Destination
+            return $false
+        }
+    }
+
+    # Non-interactive → safe default (skip)
+    $isInteractive = $false
+    try {
+        $isInteractive = [Environment]::UserInteractive -and -not [Console]::IsInputRedirected
+    } catch { }
+
+    if (-not $isInteractive) {
+        Write-Host "  Skipping existing file (non-interactive): $Destination"
+        $script:SkippedFiles += $Destination
+        return $false
+    }
+
+    while ($true) {
+        Write-Host "  File already exists: $Destination"
+        $answer = Read-Host "  Overwrite? [y]es / [n]o / [N]o to all / [a]ll"
+        switch ($answer) {
+            'y' { return $true }
+            'n' { $script:SkippedFiles += $Destination; return $false }
+            'N' { $script:OverwriteMode = "none"; $script:SkippedFiles += $Destination; return $false }
+            'a' { $script:OverwriteMode = "all"; return $true }
+            default { Write-Host "  Please enter y, n, N, or a." }
+        }
+    }
+}
+
 function Copy-SingleFile {
     param([string]$Source, [string]$Destination)
+    if (-not (Confirm-Overwrite -Destination $Destination)) {
+        return
+    }
     $parentDir = Split-Path $Destination -Parent
     if (-not (Test-Path $parentDir)) {
         New-Item -ItemType Directory -Path $parentDir -Force | Out-Null
@@ -101,7 +159,12 @@ function Copy-DirectoryContents {
     if (-not (Test-Path $Destination)) {
         New-Item -ItemType Directory -Path $Destination -Force | Out-Null
     }
-    Copy-Item -Path (Join-Path $Source '*') -Destination $Destination -Recurse -Force
+    $sourceFiles = Get-ChildItem -Path $Source -Recurse -File
+    foreach ($file in $sourceFiles) {
+        $relativePath = $file.FullName.Substring($Source.TrimEnd('/\').Length + 1)
+        $destPath = Join-Path $Destination $relativePath
+        Copy-SingleFile -Source $file.FullName -Destination $destPath
+    }
 }
 
 function Render-AgentMenu {
@@ -287,6 +350,12 @@ function New-SkillWrapper {
     if (-not $name -or -not $description) { return }
 
     $skillDir = Join-Path $TargetDir $name
+    $skillFile = Join-Path $skillDir "SKILL.md"
+
+    if (-not (Confirm-Overwrite -Destination $skillFile)) {
+        return
+    }
+
     New-Item -ItemType Directory -Path $skillDir -Force | Out-Null
 
     $bt = '`'
@@ -297,7 +366,7 @@ function New-SkillWrapper {
     $lines += @("---", "", "Read and follow ${bt}.context/playbooks/${RelPath}${bt} in full.")
 
     $content = ($lines -join "`n") + "`n"
-    [System.IO.File]::WriteAllText((Join-Path $skillDir "SKILL.md"), $content)
+    [System.IO.File]::WriteAllText($skillFile, $content)
 }
 
 function New-SkillsForSelectedAgents {
@@ -325,6 +394,17 @@ if ($Help) {
 }
 
 Print-Banner
+
+if ($Overwrite -and $NoOverwrite) {
+    Write-Error "-Overwrite and -NoOverwrite are mutually exclusive."
+    exit 1
+}
+if ($Overwrite) {
+    $script:OverwriteMode = "all"
+}
+if ($NoOverwrite) {
+    $script:OverwriteMode = "none"
+}
 
 if (-not $Agents -or $Agents.Count -eq 0) {
     $isInteractive = $false
@@ -463,4 +543,12 @@ if (Test-AgentEnabled 'claude') {
 
 if (Test-AgentEnabled 'copilot') {
     Show-NextStep "Review $($script:Target)\.github\copilot-instructions.md"
+}
+
+if ($script:SkippedFiles.Count -gt 0) {
+    Write-Host ""
+    Write-Host "Skipped files (not overwritten - manual merge may be required):"
+    foreach ($f in $script:SkippedFiles) {
+        Write-Host "  - $f"
+    }
 }

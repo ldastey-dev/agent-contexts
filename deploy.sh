@@ -14,6 +14,10 @@ SELECTED_AGENTS=()
 ENABLED_AGENTS=()
 TARGET=""
 AGENTS_FLAG_PROVIDED=0
+OVERWRITE_MODE=""       # "all" | "none" | "" (prompt per-file)
+OVERWRITE_FLAG=0
+NO_OVERWRITE_FLAG=0
+SKIPPED_FILES=()
 
 usage() {
   cat <<EOF
@@ -39,6 +43,9 @@ Agent-specific files (copied only for selected agents):
 Options:
   --agents   Mandatory in non-interactive mode. Supports one or more values:
              claude copilot cursor devin windsurf all
+  --overwrite    Overwrite all existing files without prompting
+  --no-overwrite Skip all existing files without prompting
+                 Default: prompt per-file when conflicts are detected
   -h, --help Show this help message and exit
 EOF
 }
@@ -99,9 +106,49 @@ agent_enabled() {
   return 1
 }
 
+confirm_overwrite() {
+  local dst="$1"
+
+  # New files always proceed
+  if [[ ! -e "$dst" ]]; then
+    return 0
+  fi
+
+  case "$OVERWRITE_MODE" in
+    all)  return 0 ;;
+    none)
+      SKIPPED_FILES+=("$dst")
+      return 1
+      ;;
+  esac
+
+  # Non-interactive without explicit flag → safe default (skip)
+  if [[ ! -t 0 || ! -t 1 ]]; then
+    echo "  Skipping existing file (non-interactive): $dst"
+    SKIPPED_FILES+=("$dst")
+    return 1
+  fi
+
+  while true; do
+    printf "  File already exists: %s\n" "$dst"
+    printf "  Overwrite? [y]es / [n]o / [N]o to all / [a]ll: "
+    read -r answer
+    case "$answer" in
+      y) return 0 ;;
+      n) SKIPPED_FILES+=("$dst"); return 1 ;;
+      N) OVERWRITE_MODE="none"; SKIPPED_FILES+=("$dst"); return 1 ;;
+      a) OVERWRITE_MODE="all"; return 0 ;;
+      *) echo "  Please enter y, n, N, or a." ;;
+    esac
+  done
+}
+
 copy_file() {
   local src="$1"
   local dst="$2"
+  if ! confirm_overwrite "$dst"; then
+    return 0
+  fi
   mkdir -p "$(dirname "$dst")"
   cp "$src" "$dst"
 }
@@ -109,8 +156,13 @@ copy_file() {
 copy_dir_contents() {
   local src="$1"
   local dst="$2"
-  mkdir -p "$dst"
-  cp -r "$src/." "$dst/"
+  local rel_path file_dst
+
+  while IFS= read -r -d '' file; do
+    rel_path="${file#"$src"/}"
+    file_dst="$dst/$rel_path"
+    copy_file "$file" "$file_dst"
+  done < <(find "$src" -type f -print0 | sort -z)
 }
 
 interactive_select_agents() {
@@ -323,10 +375,16 @@ generate_skill() {
   fi
 
   local skill_dir="$target_dir/$name"
+  local skill_file="$skill_dir/SKILL.md"
+
+  if ! confirm_overwrite "$skill_file"; then
+    return
+  fi
+
   mkdir -p "$skill_dir"
 
   if [[ -n "$allowed_tools" ]]; then
-    cat > "$skill_dir/SKILL.md" << SKILL_EOF
+    cat > "$skill_file" << SKILL_EOF
 ---
 name: $name
 description: "$description"
@@ -336,7 +394,7 @@ allowed-tools: "$allowed_tools"
 Read and follow \`.context/playbooks/$rel_path\` in full.
 SKILL_EOF
   else
-    cat > "$skill_dir/SKILL.md" << SKILL_EOF
+    cat > "$skill_file" << SKILL_EOF
 ---
 name: $name
 description: "$description"
@@ -395,6 +453,16 @@ while [[ $# -gt 0 ]]; do
         exit 1
       fi
       ;;
+    --overwrite)
+      OVERWRITE_MODE="all"
+      OVERWRITE_FLAG=1
+      shift
+      ;;
+    --no-overwrite)
+      OVERWRITE_MODE="none"
+      NO_OVERWRITE_FLAG=1
+      shift
+      ;;
     --*)
       echo "Error: unknown option '$1'" >&2
       echo "" >&2
@@ -413,6 +481,11 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+if [[ $OVERWRITE_FLAG -eq 1 && $NO_OVERWRITE_FLAG -eq 1 ]]; then
+  echo "Error: --overwrite and --no-overwrite are mutually exclusive." >&2
+  exit 1
+fi
 
 print_banner
 
@@ -548,4 +621,12 @@ fi
 
 if agent_enabled copilot; then
   next_step "Review $TARGET/.github/copilot-instructions.md"
+fi
+
+if [[ ${#SKIPPED_FILES[@]} -gt 0 ]]; then
+  echo ""
+  echo "Skipped files (not overwritten — manual merge may be required):"
+  for f in "${SKIPPED_FILES[@]}"; do
+    echo "  - $f"
+  done
 fi
